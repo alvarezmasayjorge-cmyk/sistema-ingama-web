@@ -2,10 +2,11 @@ import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { AREAS } from "../data/initial";
 import { isExpired, isSoon } from "../helpers";
+import AIInsights from "../components/AIInsights";
 
 const CHART_COLORS = { approved: "#10b981", pending: "#f59e0b", rejected: "#ef4444", draft: "#94a3b8" };
 
-export default function Dashboard({ records, personnel, supplies, setView }) {
+export default function Dashboard({ records, personnel, supplies, rcma9, setView }) {
   const stats = useMemo(() => {
     const total = records.length;
     const aprobados = records.filter((r) => r.estado === "aprobado").length;
@@ -16,9 +17,11 @@ export default function Dashboard({ records, personnel, supplies, setView }) {
     const insSoon = supplies.filter((s) => !isExpired(s.venc) && isSoon(s.venc)).length;
     const persVenc = personnel.filter((p) => isExpired(p.vigencia)).length;
     const persSoon = personnel.filter((p) => !isExpired(p.vigencia) && isSoon(p.vigencia)).length;
+    const atpTotal = rcma9 ? rcma9.length : 0;
+    const atpConformes = rcma9 ? rcma9.filter(r => r.estado === "conforme").length : 0;
     const cumplimiento = total > 0 ? Math.round((aprobados / total) * 100) : 0;
-    return { total, aprobados, pendientes, rechazados, borradores, insVenc, insSoon, persVenc, persSoon, cumplimiento };
-  }, [records, personnel, supplies]);
+    return { total, aprobados, pendientes, rechazados, borradores, insVenc, insSoon, persVenc, persSoon, atpTotal, atpConformes, cumplimiento };
+  }, [records, personnel, supplies, rcma9]);
 
   const pieData = useMemo(() => [
     { name: "Aprobados", value: stats.aprobados, color: CHART_COLORS.approved },
@@ -61,10 +64,10 @@ export default function Dashboard({ records, personnel, supplies, setView }) {
   }, [records]);
 
   const kpis = [
-    { label: "Total Registros", val: stats.total, cls: "kpi-total", onClick: () => setView("rcld01") },
-    { label: "Aprobados", val: stats.aprobados, cls: "kpi-approved", onClick: () => setView("rcld01") },
-    { label: "Pend. Verificación", val: stats.pendientes, cls: "kpi-pending", onClick: () => setView("rcld01") },
-    { label: "Rechazados", val: stats.rechazados, cls: "kpi-rejected", onClick: () => setView("rcld01") },
+    { label: "Total Registros", val: stats.total, cls: "kpi-total", onClick: () => setView("rcld01"), sub: "RC.LD.01 · Actual" },
+    { label: "Aprobados", val: stats.aprobados, cls: "kpi-approved", onClick: () => setView("rcld01"), sub: "RC.LD.01 · Actual" },
+    { label: "Hisopados ATP", val: stats.atpTotal, cls: "kpi-pending", onClick: () => setView("rcma9"), sub: "RC.MA.9 · Total" },
+    { label: "ATP Conformes", val: stats.atpConformes, cls: "kpi-approved", onClick: () => setView("rcma9"), sub: "RC.MA.9 · Conforme" },
   ];
 
   return (
@@ -108,7 +111,7 @@ export default function Dashboard({ records, personnel, supplies, setView }) {
           <button key={i} className={`kpi-card ${k.cls}`} onClick={k.onClick}>
             <span className="kpi-label">{k.label}</span>
             <span className="kpi-value">{k.val}</span>
-            <span className="kpi-period">RC.LD.01 · Actual</span>
+            <span className="kpi-period">{k.sub}</span>
           </button>
         ))}
       </div>
@@ -169,6 +172,9 @@ export default function Dashboard({ records, personnel, supplies, setView }) {
           </div>
         </div>
       </div>
+
+      {/* IA Insights */}
+      <AIInsights records={records} personnel={personnel} supplies={supplies} rcma9={rcma9} />
 
       {/* Bottom section */}
       <div className="dashboard-bottom">

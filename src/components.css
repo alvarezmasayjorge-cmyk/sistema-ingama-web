@@ -35,6 +35,9 @@
 .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(30,64,175,0.1); }
 .form-input-readonly { background: var(--border-light); color: var(--text-tertiary); }
 .form-input-error { border-color: var(--color-danger) !important; box-shadow: 0 0 0 3px rgba(239,68,68,0.1) !important; }
+.form-error-msg { font-size: 11px; color: var(--color-danger); margin-top: 4px; display: flex; align-items: center; gap: 4px; font-weight: 500; }
+.form-error-msg::before { content: "⚠"; font-size: 12px; }
+.checkbox-card-error { border-color: var(--color-danger) !important; background: #fef2f2 !important; }
 .form-select-sm { padding: 4px 8px; font-size: 11px; }
 .form-checkbox { width: 16px; height: 16px; accent-color: var(--color-primary); cursor: pointer; }
 .form-textarea { resize: vertical; min-height: 60px; }
@@ -249,4 +252,29 @@
   .dashboard-charts, .dashboard-bottom, .config-grid, .info-grid-2 { grid-template-columns: 1fr; }
   .detail-grid { grid-template-columns: repeat(2, 1fr); }
   .form-grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ─── PRINT STYLES ──────────────────────────────────────────────────── */
+.print-only { display: none; }
+
+@media print {
+  .sidebar, .page-header, .page-back-header, .filters-bar, .form-actions, .toast-container, .btn, .btn-primary, .btn-outline, .btn-ghost { display: none !important; }
+  .print-only { display: block; }
+  .app-layout { height: auto; overflow: visible; }
+  .app-main { overflow: visible; padding: 0; background: white; color: black; }
+  .page { padding: 0; max-width: 100%; margin: 0; }
+  body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  
+  .print-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid black; padding-bottom: 10px; margin-bottom: 20px; }
+  .print-logo { width: 100px; height: auto; object-fit: contain; }
+  .print-header h2 { font-size: 18px; margin: 0; color: black; }
+  .print-header p { font-size: 12px; margin: 4px 0 0; color: #555; }
+  
+  .card { border: none !important; box-shadow: none !important; margin-bottom: 20px !important; padding: 0 !important; page-break-inside: avoid; }
+  .data-table th { background-color: #f1f5f9 !important; color: black !important; border: 1px solid #ccc !important; }
+  .data-table td { border: 1px solid #ccc !important; padding: 4px 8px !important; }
+  
+  .form-input, .form-select, .form-textarea { border: none !important; border-bottom: 1px solid #ccc !important; border-radius: 0 !important; background: transparent !important; padding: 4px 0 !important; appearance: none; }
+  .form-checkbox { border: 1px solid #000; }
+  .sig-canvas { border: 1px solid #ccc !important; }
 }

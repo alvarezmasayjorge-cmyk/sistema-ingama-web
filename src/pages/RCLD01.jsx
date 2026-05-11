@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { AREAS, ITEMS_AREA, STATUS } from "../data/initial";
 import { fmtDate, newRecordId, todayISO, getCurrentMonth } from "../helpers";
+import { validateRecord, hasErrors } from "../validators";
 import SigCanvas from "../components/SigCanvas";
 
 // ─── LIST VIEW ─────────────────────────────────────────────────────────────────
@@ -39,10 +40,16 @@ function RecordList({ records, user, onNew, onDetail }) {
           <p className="page-subtitle">Rev. 03 · Vigencia 2026</p>
         </div>
         {canCreate && (
-          <button className="btn btn-primary" onClick={onNew}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M8 3v10M3 8h10"/></svg>
-            Nuevo Registro
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button className="btn btn-outline" onClick={() => window.print()}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 5V3h8v2M4 11H2V6h12v5h-2M4 9h8v4H4z"/></svg>
+              Imprimir
+            </button>
+            <button className="btn btn-primary" onClick={onNew}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M8 3v10M3 8h10"/></svg>
+              Nuevo Registro
+            </button>
+          </div>
         )}
       </div>
 
@@ -138,7 +145,7 @@ function RecordList({ records, user, onNew, onDetail }) {
 }
 
 // ─── FORM VIEW ─────────────────────────────────────────────────────────────────
-function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
+function RecordForm({ record, user, onSave, onCancel, allRecords, personnel, toast }) {
   const isNew = !record;
   const [form, setForm] = useState({
     id: record?.id || newRecordId(allRecords),
@@ -158,20 +165,34 @@ function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
   });
 
   const [errors, setErrors] = useState({});
-  const upd = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const upd = (k, v) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    setErrors((prev) => ({ ...prev, [k]: undefined }));
+  };
+  const updItem = (it, k, v) => {
+    setForm((f) => ({
+      ...f,
+      items: {
+        ...f.items,
+        [it]: { ...(f.items[it] || {}), [k]: v }
+      }
+    }));
+  };
   const canCtrl = user.role === "control" || user.role === "admin";
 
-  const validate = () => {
-    const e = {};
-    if (!form.resultado) e.resultado = true;
-    if (!form.liberacion) e.liberacion = true;
+  const validate = (forSign = false) => {
+    const e = validateRecord(form, allRecords, {
+      personnel: personnel || [],
+      requireSign: forSign,
+      isNew: !record,
+    });
     setErrors(e);
-    return Object.keys(e).length === 0;
+    return !hasErrors(e);
   };
 
   const saveAndSign = () => {
-    if (!validate()) {
-      toast.warning("Complete todos los campos requeridos antes de firmar.");
+    if (!validate(true)) {
+      toast.warning("Complete y corrija los campos marcados antes de firmar.");
       return;
     }
     onSave({ ...form, estado: "firmado_control", firmaCtrl: true });
@@ -179,6 +200,10 @@ function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
   };
 
   const saveDraft = () => {
+    if (!validate(false)) {
+      toast.warning("Revise los campos marcados en rojo");
+      return;
+    }
     onSave({ ...form, estado: "borrador" });
     toast.info("Borrador guardado correctamente.");
   };
@@ -205,25 +230,30 @@ function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
           <div className="form-grid-2">
             <div className="form-group">
               <label className="form-label">Área *</label>
-              <select value={form.area} onChange={(e) => upd("area", e.target.value)} disabled={!canCtrl} className="form-select">
+              <select value={form.area} onChange={(e) => upd("area", e.target.value)} disabled={!canCtrl} className={`form-select ${errors.area ? "form-input-error" : ""}`}>
                 {AREAS.map((a) => <option key={a}>{a}</option>)}
               </select>
+              {errors.area && <span className="form-error-msg">{errors.area}</span>}
             </div>
             <div className="form-group">
               <label className="form-label">Mes *</label>
-              <input value={form.mes} onChange={(e) => upd("mes", e.target.value)} disabled={!canCtrl} className="form-input" />
+              <input value={form.mes} onChange={(e) => upd("mes", e.target.value)} disabled={!canCtrl} className={`form-input ${errors.mes ? "form-input-error" : ""}`} />
+              {errors.mes && <span className="form-error-msg">{errors.mes}</span>}
             </div>
             <div className="form-group">
               <label className="form-label">Fecha de limpieza *</label>
-              <input type="date" value={form.fecha} onChange={(e) => upd("fecha", e.target.value)} disabled={!canCtrl} className="form-input" />
+              <input type="date" value={form.fecha} onChange={(e) => upd("fecha", e.target.value)} disabled={!canCtrl} className={`form-input ${errors.fecha ? "form-input-error" : ""}`} />
+              {errors.fecha && <span className="form-error-msg">{errors.fecha}</span>}
             </div>
             <div className="form-group">
               <label className="form-label">Responsable de Control</label>
-              <input value={form.respControl} readOnly className="form-input form-input-readonly" />
+              <input value={form.respControl} readOnly className={`form-input form-input-readonly ${errors.respControl ? "form-input-error" : ""}`} />
+              {errors.respControl && <span className="form-error-msg">{errors.respControl}</span>}
             </div>
             <div className="form-group">
               <label className="form-label">Responsable de Seguimiento</label>
-              <input value={form.respSeg} onChange={(e) => upd("respSeg", e.target.value)} disabled={!canCtrl} className="form-input" />
+              <input value={form.respSeg} onChange={(e) => upd("respSeg", e.target.value)} disabled={!canCtrl} className={`form-input ${errors.respSeg ? "form-input-error" : ""}`} />
+              {errors.respSeg && <span className="form-error-msg">{errors.respSeg}</span>}
             </div>
           </div>
         </div>
@@ -238,27 +268,36 @@ function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
             <table className="data-table data-table-compact">
               <thead>
                 <tr>
-                  {["Ítem", "Frecuencia", "Inicio", "Fin", "Mant.", "C. Proceso", "Reapertura"].map((h) => (
-                    <th key={h}>{h}</th>
-                  ))}
+                  <th>Orden</th>
+                  <th>Ítem de Limpieza</th>
+                  <th className="td-center">Eliminación de residuos</th>
+                  <th className="td-center">Limpieza por mantenimiento (LM)</th>
+                  <th className="td-center">Cambio Proceso / Reapertura (CP)</th>
+                  <th>Acción correctiva inmediata</th>
                 </tr>
               </thead>
               <tbody>
-                {currentItems.map((it, i) => (
-                  <tr key={it} className={i % 2 === 0 ? "" : "row-alt"}>
-                    <td className="td-bold">{it}</td>
-                    <td>
-                      <select disabled={!canCtrl} className="form-select form-select-sm">
-                        {["Diaria", "Semanal", "Quincenal", "Mensual"].map((f) => <option key={f}>{f}</option>)}
-                      </select>
-                    </td>
-                    {["inicio", "fin", "mant", "cambio", "reap"].map((k) => (
-                      <td key={k} className="td-center">
-                        <input type="checkbox" disabled={!canCtrl} className="form-checkbox" />
+                {currentItems.map((it, i) => {
+                  const val = form.items[it] || {};
+                  return (
+                    <tr key={it} className={i % 2 === 0 ? "" : "row-alt"}>
+                      <td className="td-center text-muted">{i + 1}</td>
+                      <td className="td-bold">{it}</td>
+                      <td className="td-center">
+                        <input type="checkbox" disabled={!canCtrl} className="form-checkbox" checked={val.residuos || false} onChange={(e) => updItem(it, 'residuos', e.target.checked)} />
                       </td>
-                    ))}
-                  </tr>
-                ))}
+                      <td className="td-center">
+                        <input type="checkbox" disabled={!canCtrl} className="form-checkbox" checked={val.lm || false} onChange={(e) => updItem(it, 'lm', e.target.checked)} />
+                      </td>
+                      <td className="td-center">
+                        <input type="checkbox" disabled={!canCtrl} className="form-checkbox" checked={val.cp || false} onChange={(e) => updItem(it, 'cp', e.target.checked)} />
+                      </td>
+                      <td>
+                        <input type="text" disabled={!canCtrl} className="form-input form-input-sm" value={val.accion || ""} onChange={(e) => updItem(it, 'accion', e.target.value)} placeholder="Opcional..." />
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -270,15 +309,17 @@ function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
           <div className={`radio-group ${errors.resultado ? "radio-group-error" : ""}`}>
             {[["conforme", "✓ Conforme", "radio-success"], ["no_conforme", "✗ No conforme", "radio-danger"]].map(([v, l, cls]) => (
               <label key={v} className={`radio-card ${cls} ${form.resultado === v ? "selected" : ""}`}>
-                <input type="radio" name="resultado" value={v} checked={form.resultado === v} onChange={(e) => { upd("resultado", e.target.value); setErrors((e2) => ({ ...e2, resultado: undefined })); }} disabled={!canCtrl} />
+                <input type="radio" name="resultado" value={v} checked={form.resultado === v} onChange={(e) => { upd("resultado", e.target.value); }} disabled={!canCtrl} />
                 <span>{l}</span>
               </label>
             ))}
           </div>
+          {errors.resultado && <span className="form-error-msg">{errors.resultado}</span>}
           {form.resultado === "no_conforme" && (
             <div className="form-group" style={{ marginTop: "1rem" }}>
               <label className="form-label">Corrección inmediata realizada *</label>
-              <textarea value={form.correccion} onChange={(e) => upd("correccion", e.target.value)} disabled={!canCtrl} rows={2} className="form-textarea" placeholder="Describa la corrección realizada..." />
+              <textarea value={form.correccion} onChange={(e) => upd("correccion", e.target.value)} disabled={!canCtrl} rows={2} className={`form-textarea ${errors.correccion ? "form-input-error" : ""}`} placeholder="Describa la corrección realizada..." />
+              {errors.correccion && <span className="form-error-msg">{errors.correccion}</span>}
             </div>
           )}
           <div className="form-group" style={{ marginTop: "1rem" }}>
@@ -286,11 +327,12 @@ function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
             <div className={`radio-group radio-group-sm ${errors.liberacion ? "radio-group-error" : ""}`}>
               {[["si", "✓ Sí — Área liberada", "radio-success"], ["no", "✗ No — No liberada", "radio-danger"], ["na", "— No aplica", "radio-neutral"]].map(([v, l, cls]) => (
                 <label key={v} className={`radio-card ${cls} ${form.liberacion === v ? "selected" : ""}`}>
-                  <input type="radio" name="liberacion" value={v} checked={form.liberacion === v} onChange={(e) => { upd("liberacion", e.target.value); setErrors((e2) => ({ ...e2, liberacion: undefined })); }} disabled={!canCtrl} />
+                  <input type="radio" name="liberacion" value={v} checked={form.liberacion === v} onChange={(e) => { upd("liberacion", e.target.value); }} disabled={!canCtrl} />
                   <span>{l}</span>
                 </label>
               ))}
             </div>
+            {errors.liberacion && <span className="form-error-msg">{errors.liberacion}</span>}
           </div>
           <div className="form-group" style={{ marginTop: "1rem" }}>
             <label className="form-label">Observaciones</label>
@@ -369,12 +411,26 @@ function RecordDetail({ record, user, onUpdate, onBack, toast }) {
           Volver
         </button>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <h1 className="page-title">{record.id}</h1>
+          <button className="btn btn-outline btn-sm" onClick={() => window.print()}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 5V3h8v2M4 11H2V6h12v5h-2M4 9h8v4H4z"/></svg>
+            Imprimir
+          </button>
           <span className={`status-badge ${st.cls}`}>
             <span className="status-dot" />
             {st.label}
           </span>
         </div>
+      </div>
+      
+      {/* Elemento solo visible en impresión */}
+      <div className="print-only">
+         <div className="print-header">
+            <img src="/logo.png" alt="Logo INGAMA" className="print-logo" />
+            <div>
+              <h2>RC.LD.01 REGISTRO DE LIMPIEZA Y DESINFECCIÓN</h2>
+              <p>FSSC 22000 v6 / ISO/TS 22002-1 - Rev. 03</p>
+            </div>
+         </div>
       </div>
 
       <div className="detail-grid">
@@ -430,7 +486,7 @@ function RecordDetail({ record, user, onUpdate, onBack, toast }) {
 }
 
 // ─── MAIN RCLD01 ───────────────────────────────────────────────────────────────
-export default function RCLD01({ records, setRecords, user, toast }) {
+export default function RCLD01({ records, setRecords, user, toast, personnel = [] }) {
   const [sub, setSub] = useState("list");
   const [sel, setSel] = useState(null);
 
@@ -448,7 +504,7 @@ export default function RCLD01({ records, setRecords, user, toast }) {
     setSub("list");
   }, [setRecords]);
 
-  if (sub === "form") return <RecordForm record={sel} user={user} onSave={handleSave} onCancel={backToList} allRecords={records} toast={toast} />;
+  if (sub === "form") return <RecordForm record={sel} user={user} onSave={handleSave} onCancel={backToList} allRecords={records} personnel={personnel} toast={toast} />;
   if (sub === "detail" && sel) return <RecordDetail record={sel} user={user} onUpdate={handleUpdate} onBack={backToList} toast={toast} />;
   return <RecordList records={records} user={user} onNew={openNew} onDetail={openDetail} />;
 }

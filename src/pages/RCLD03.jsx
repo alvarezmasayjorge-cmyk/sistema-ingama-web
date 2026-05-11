@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { fmtDate, isExpired, isSoon, newSupplyId, newSupplyCode } from "../helpers";
+import { validateSupply, hasErrors } from "../validators";
 
 const EMPTY_SUPPLY = {
   codigo: "", nombre: "", unidad: "Litro", proveedor: "", ingrediente: "",
@@ -7,24 +8,29 @@ const EMPTY_SUPPLY = {
   lote: "", venc: "", estado: "condicionado",
 };
 
-function SupplyForm({ supply, onSave, onCancel, allSupplies }) {
+function SupplyForm({ supply, onSave, onCancel, allSupplies, toast }) {
   const isNew = !supply;
   const [form, setForm] = useState(supply || { ...EMPTY_SUPPLY, codigo: newSupplyCode(allSupplies) });
   const [errors, setErrors] = useState({});
-  const upd = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const upd = (k, v) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    setErrors((prev) => ({ ...prev, [k]: undefined }));
+  };
 
   const validate = () => {
-    const e = {};
-    if (!form.nombre.trim()) e.nombre = true;
-    if (!form.proveedor.trim()) e.proveedor = true;
-    if (!form.ingrediente.trim()) e.ingrediente = true;
-    if (!form.venc) e.venc = true;
+    const e = validateSupply(form, allSupplies, {
+      isNew,
+      currentId: supply?.id || null,
+    });
     setErrors(e);
-    return Object.keys(e).length === 0;
+    return !hasErrors(e);
   };
 
   const save = () => {
-    if (!validate()) return;
+    if (!validate()) {
+      toast?.warning("Revise los campos marcados en rojo");
+      return;
+    }
     onSave(form);
   };
 
@@ -34,11 +40,13 @@ function SupplyForm({ supply, onSave, onCancel, allSupplies }) {
       <div className="form-grid-2">
         <div className="form-group">
           <label className="form-label">Código</label>
-          <input className="form-input form-input-readonly" value={form.codigo} readOnly />
+          <input className={`form-input form-input-readonly ${errors.codigo ? "form-input-error" : ""}`} value={form.codigo} readOnly />
+          {errors.codigo && <span className="form-error-msg">{errors.codigo}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Nombre *</label>
           <input className={`form-input ${errors.nombre ? "form-input-error" : ""}`} value={form.nombre} onChange={(e) => upd("nombre", e.target.value)} placeholder="Nombre del insumo" />
+          {errors.nombre && <span className="form-error-msg">{errors.nombre}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Unidad</label>
@@ -49,14 +57,17 @@ function SupplyForm({ supply, onSave, onCancel, allSupplies }) {
         <div className="form-group">
           <label className="form-label">Proveedor *</label>
           <input className={`form-input ${errors.proveedor ? "form-input-error" : ""}`} value={form.proveedor} onChange={(e) => upd("proveedor", e.target.value)} />
+          {errors.proveedor && <span className="form-error-msg">{errors.proveedor}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Ingrediente activo *</label>
           <input className={`form-input ${errors.ingrediente ? "form-input-error" : ""}`} value={form.ingrediente} onChange={(e) => upd("ingrediente", e.target.value)} />
+          {errors.ingrediente && <span className="form-error-msg">{errors.ingrediente}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Concentración</label>
-          <input className="form-input" value={form.conc} onChange={(e) => upd("conc", e.target.value)} placeholder="Ej: 15% p/v" />
+          <input className={`form-input ${errors.conc ? "form-input-error" : ""}`} value={form.conc} onChange={(e) => upd("conc", e.target.value)} placeholder="Ej: 15% p/v" />
+          {errors.conc && <span className="form-error-msg">{errors.conc}</span>}
         </div>
         <div className="form-group form-group-full">
           <label className="form-label">Superficie de uso</label>
@@ -64,31 +75,39 @@ function SupplyForm({ supply, onSave, onCancel, allSupplies }) {
         </div>
         <div className="form-group">
           <label className="form-label">Lote</label>
-          <input className="form-input" value={form.lote} onChange={(e) => upd("lote", e.target.value)} />
+          <input className={`form-input ${errors.lote ? "form-input-error" : ""}`} value={form.lote} onChange={(e) => upd("lote", e.target.value)} />
+          {errors.lote && <span className="form-error-msg">{errors.lote}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Fecha de vencimiento *</label>
           <input type="date" className={`form-input ${errors.venc ? "form-input-error" : ""}`} value={form.venc} onChange={(e) => upd("venc", e.target.value)} />
+          {errors.venc && <span className="form-error-msg">{errors.venc}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Estado</label>
-          <select className="form-select" value={form.estado} onChange={(e) => upd("estado", e.target.value)}>
+          <select className={`form-select ${errors.estado ? "form-input-error" : ""}`} value={form.estado} onChange={(e) => upd("estado", e.target.value)}>
             <option value="aprobado">Aprobado</option>
             <option value="condicionado">Condicionado</option>
             <option value="rechazado">Rechazado</option>
           </select>
+          {errors.estado && <span className="form-error-msg">{errors.estado}</span>}
         </div>
       </div>
       <div className="form-group" style={{ marginTop: "1rem" }}>
         <label className="form-label">Verificaciones</label>
         <div className="checkbox-group">
           {[["apta", "Apta para contacto con alimento"], ["ft", "Ficha técnica disponible"], ["msds", "Hoja de seguridad (MSDS) disponible"]].map(([k, l]) => (
-            <label key={k} className="checkbox-card">
+            <label key={k} className={`checkbox-card ${errors[k] ? "checkbox-card-error" : ""}`}>
               <input type="checkbox" checked={form[k]} onChange={(e) => upd(k, e.target.checked)} className="form-checkbox" />
               <span>{l}</span>
             </label>
           ))}
         </div>
+        {(errors.apta || errors.ft || errors.msds) && (
+          <span className="form-error-msg">
+            {errors.apta || errors.ft || errors.msds}
+          </span>
+        )}
       </div>
       <div className="form-actions">
         <button className="btn btn-ghost" onClick={onCancel}>Cancelar</button>
@@ -141,7 +160,7 @@ export default function RCLD03({ supplies, setSupplies, user, toast }) {
           </button>
           <h1 className="page-title">RC.LD.03 — Insumos L&D</h1>
         </div>
-        <SupplyForm supply={editSupply} onSave={handleSave} onCancel={() => { setShowForm(false); setEditSupply(null); }} allSupplies={supplies} />
+        <SupplyForm supply={editSupply} onSave={handleSave} onCancel={() => { setShowForm(false); setEditSupply(null); }} allSupplies={supplies} toast={toast} />
       </div>
     );
   }
@@ -153,12 +172,29 @@ export default function RCLD03({ supplies, setSupplies, user, toast }) {
           <h1 className="page-title">RC.LD.03 — Insumos de Limpieza y Desinfección</h1>
           <p className="page-subtitle">Lista maestra técnica · Rev. 02 · {supplies.length} insumo(s)</p>
         </div>
-        {user.role === "admin" && (
-          <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M8 3v10M3 8h10"/></svg>
-            Agregar
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className="btn btn-outline" onClick={() => window.print()}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 5V3h8v2M4 11H2V6h12v5h-2M4 9h8v4H4z"/></svg>
+            Imprimir
           </button>
-        )}
+          {user.role === "admin" && (
+            <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M8 3v10M3 8h10"/></svg>
+              Agregar
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Elemento solo visible en impresión */}
+      <div className="print-only">
+         <div className="print-header">
+            <img src="/logo.png" alt="Logo INGAMA" className="print-logo" />
+            <div>
+              <h2>RC.LD.03 REGISTRO LISTA DE INSUMOS DE LIMPIEZA</h2>
+              <p>Insumos autorizados FSSC 22000</p>
+            </div>
+         </div>
       </div>
 
       {alertCount > 0 && (

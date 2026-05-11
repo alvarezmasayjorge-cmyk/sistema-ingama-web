@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { fmtDate, isExpired, isSoon, newPersonnelId, todayISO } from "../helpers";
+import { validatePersonnel, hasErrors } from "../validators";
 
 const EMPTY_PERSON = {
   nombre: "", cargo: "", telefono: "", fechaAut: "", codCap: "",
@@ -7,23 +8,29 @@ const EMPTY_PERSON = {
   vigencia: "", estado: "pendiente", autorizadoPor: "",
 };
 
-function PersonnelForm({ person, onSave, onCancel }) {
+function PersonnelForm({ person, onSave, onCancel, allPersonnel, toast }) {
   const isNew = !person;
   const [form, setForm] = useState(person || { ...EMPTY_PERSON });
   const [errors, setErrors] = useState({});
-  const upd = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const upd = (k, v) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    setErrors((prev) => ({ ...prev, [k]: undefined }));
+  };
 
   const validate = () => {
-    const e = {};
-    if (!form.nombre.trim()) e.nombre = true;
-    if (!form.cargo.trim()) e.cargo = true;
-    if (!form.vigencia) e.vigencia = true;
+    const e = validatePersonnel(form, allPersonnel, {
+      isNew,
+      currentId: person?.id || null,
+    });
     setErrors(e);
-    return Object.keys(e).length === 0;
+    return !hasErrors(e);
   };
 
   const save = () => {
-    if (!validate()) return;
+    if (!validate()) {
+      toast?.warning("Revise los campos marcados en rojo");
+      return;
+    }
     onSave(form);
   };
 
@@ -34,26 +41,37 @@ function PersonnelForm({ person, onSave, onCancel }) {
         <div className="form-group">
           <label className="form-label">Nombre completo *</label>
           <input className={`form-input ${errors.nombre ? "form-input-error" : ""}`} value={form.nombre} onChange={(e) => upd("nombre", e.target.value)} placeholder="Nombre y apellidos" />
+          {errors.nombre && <span className="form-error-msg">{errors.nombre}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Cargo *</label>
           <input className={`form-input ${errors.cargo ? "form-input-error" : ""}`} value={form.cargo} onChange={(e) => upd("cargo", e.target.value)} placeholder="Ej: Operario de Planta" />
+          {errors.cargo && <span className="form-error-msg">{errors.cargo}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Teléfono</label>
-          <input className="form-input" value={form.telefono} onChange={(e) => upd("telefono", e.target.value)} placeholder="7XXX-XXXX" />
+          <input className={`form-input ${errors.telefono ? "form-input-error" : ""}`} value={form.telefono} onChange={(e) => upd("telefono", e.target.value)} placeholder="7XXX-XXXX" />
+          {errors.telefono && <span className="form-error-msg">{errors.telefono}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Código Capacitación</label>
-          <input className="form-input" value={form.codCap} onChange={(e) => upd("codCap", e.target.value)} placeholder="CAP-2026-XXX" />
+          <input className={`form-input ${errors.codCap ? "form-input-error" : ""}`} value={form.codCap} onChange={(e) => upd("codCap", e.target.value)} placeholder="CAP-2026-XXX" />
+          {errors.codCap && <span className="form-error-msg">{errors.codCap}</span>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Fecha Capacitación</label>
+          <input type="date" className={`form-input ${errors.fechaCap ? "form-input-error" : ""}`} value={form.fechaCap} onChange={(e) => upd("fechaCap", e.target.value)} />
+          {errors.fechaCap && <span className="form-error-msg">{errors.fechaCap}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Fecha Autorización</label>
-          <input type="date" className="form-input" value={form.fechaAut} onChange={(e) => upd("fechaAut", e.target.value)} />
+          <input type="date" className={`form-input ${errors.fechaAut ? "form-input-error" : ""}`} value={form.fechaAut} onChange={(e) => upd("fechaAut", e.target.value)} />
+          {errors.fechaAut && <span className="form-error-msg">{errors.fechaAut}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Vigencia *</label>
           <input type="date" className={`form-input ${errors.vigencia ? "form-input-error" : ""}`} value={form.vigencia} onChange={(e) => upd("vigencia", e.target.value)} />
+          {errors.vigencia && <span className="form-error-msg">{errors.vigencia}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Autorizado por</label>
@@ -61,11 +79,12 @@ function PersonnelForm({ person, onSave, onCancel }) {
         </div>
         <div className="form-group">
           <label className="form-label">Estado</label>
-          <select className="form-select" value={form.estado} onChange={(e) => upd("estado", e.target.value)}>
+          <select className={`form-select ${errors.estado ? "form-input-error" : ""}`} value={form.estado} onChange={(e) => upd("estado", e.target.value)}>
             <option value="autorizado">Autorizado</option>
             <option value="pendiente">Pendiente</option>
             <option value="suspendido">Suspendido</option>
           </select>
+          {errors.estado && <span className="form-error-msg">{errors.estado}</span>}
         </div>
       </div>
       <div className="form-group" style={{ marginTop: "1rem" }}>
@@ -137,7 +156,7 @@ export default function RCLD02({ personnel, setPersonnel, user, toast }) {
           </button>
           <h1 className="page-title">RC.LD.02 — Personal Autorizado</h1>
         </div>
-        <PersonnelForm person={editPerson} onSave={handleSave} onCancel={() => { setShowForm(false); setEditPerson(null); }} />
+        <PersonnelForm person={editPerson} onSave={handleSave} onCancel={() => { setShowForm(false); setEditPerson(null); }} allPersonnel={personnel} toast={toast} />
       </div>
     );
   }
@@ -149,12 +168,29 @@ export default function RCLD02({ personnel, setPersonnel, user, toast }) {
           <h1 className="page-title">RC.LD.02 — Personal Autorizado</h1>
           <p className="page-subtitle">Rev. 02 · Vigencia 2026 · {personnel.length} persona(s)</p>
         </div>
-        {user.role === "admin" && (
-          <button className="btn btn-primary" onClick={() => setShowForm(true)}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M8 3v10M3 8h10"/></svg>
-            Agregar
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className="btn btn-outline" onClick={() => window.print()}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 5V3h8v2M4 11H2V6h12v5h-2M4 9h8v4H4z"/></svg>
+            Imprimir
           </button>
-        )}
+          {user.role === "admin" && (
+            <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M8 3v10M3 8h10"/></svg>
+              Agregar
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Elemento solo visible en impresión */}
+      <div className="print-only">
+         <div className="print-header">
+            <img src="/logo.png" alt="Logo INGAMA" className="print-logo" />
+            <div>
+              <h2>RC.LD.02 REGISTRO PERSONAL AUTORIZADO</h2>
+              <p>Depósito de Insumos de Limpieza y Desinfección</p>
+            </div>
+         </div>
       </div>
 
       {(vencCount > 0 || soonCount > 0) && (
