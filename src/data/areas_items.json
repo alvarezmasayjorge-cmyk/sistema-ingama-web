@@ -1,5 +1,7 @@
 {
   "Recepción - Almacenamiento y Pre-Limpieza de MPH": [
+    "Orden",
+    "Eliminación de Residuo",
     "Instalaciones Eléctricas",
     "Luminarias",
     "Paredes de ladrillo y hormigón armado",
@@ -23,6 +25,8 @@
     "Utensilio de Limpieza"
   ],
   "Recepción Almacenamiento de MPH": [
+    "Orden",
+    "Eliminación de Residuo",
     "Trampas Roedores",
     "Instalaciones Eléctricas",
     "Luminarias",
@@ -45,6 +49,8 @@
     "Portón de malla metálica"
   ],
   "Pre-Limpieza de MPH": [
+    "Orden",
+    "Eliminación de Residuo",
     "Trampas Roedores",
     "Instalaciones Eléctricas",
     "Puerta metálica",
@@ -59,6 +65,8 @@
     "Paredes de ladrillo y hormigón armado"
   ],
   "Secado MPH": [
+    "Orden",
+    "Eliminación de Residuo",
     "Trampas Roedores",
     "Instalaciones Eléctricas",
     "Luminarias",
@@ -80,6 +88,8 @@
     "Electrocutor de Insecto"
   ],
   "Seleccionado de MPS": [
+    "Orden",
+    "Eliminación de Residuo",
     "Instalaciones Eléctricas",
     "Techo de Plástico",
     "Paredes de ladrillo y Plástico",
@@ -97,6 +107,8 @@
     "Luminaria"
   ],
   "Pre-Limpieza y Clasificado MPS": [
+    "Orden",
+    "Eliminación de Residuo",
     "Trampa de Roedores",
     "Balanza",
     "Bebedero de Agua",
@@ -111,6 +123,8 @@
     "Silo de Almacenamiento de Castaña en cáscara Deshidratada"
   ],
   "Almacenamiento de MPS": [
+    "Orden",
+    "Eliminación de Residuo",
     "Balanza",
     "Paredes de ladrillo y Plástico",
     "Piso de Madera",
@@ -123,6 +137,8 @@
     "Instalaciones Eléctrica"
   ],
   "Caldero y Distribuidor de Vapor": [
+    "Orden",
+    "Eliminación de Residuo",
     "Eliminación de Residuos (Cáscara)",
     "Caldero Hogar",
     "Piso de cemento Frotacheado",
@@ -142,6 +158,8 @@
     "Chimenea"
   ],
   "Sancochado": [
+    "Orden",
+    "Eliminación de Residuo",
     "Instalaciones Eléctricas",
     "Escalera de Madera",
     "Tabla de Madera",
@@ -159,6 +177,8 @@
     "Silo de Almacenamiento de almendra en Cáscara"
   ],
   "Pelado Mecánico": [
+    "Orden",
+    "Eliminación de Residuo",
     "Instalaciones Eléctricas",
     "Luminarias",
     "Piso de Cerámica",
@@ -182,6 +202,8 @@
     "Cortina de plástico"
   ],
   "Seleccionado de Almendra Pelada Cruda": [
+    "Orden",
+    "Eliminación de Residuo",
     "Techo de Plástico",
     "Piso de Cerámica",
     "Asiento de Madera",
@@ -204,6 +226,8 @@
     "Instalaciones Eléctrica"
   ],
   "Clasificado de Almendra Pelada por Tipo (Zaranda)": [
+    "Orden",
+    "Eliminación de Residuo",
     "Luminarias",
     "Piso de Cerámica",
     "Asiento de Madera",
@@ -228,6 +252,8 @@
     "Instalación Eléctrica"
   ],
   "Recorte": [
+    "Orden",
+    "Eliminación de Residuo",
     "Luminarias",
     "Ventanas de Plástico",
     "Asiento de Madera",
@@ -246,6 +272,8 @@
     "Instalaciones Eléctrica"
   ],
   "Deshidratado de Almendra Pelada": [
+    "Orden",
+    "Eliminación de Residuo",
     "Techo de Plástico",
     "Piso de Cerámica",
     "Tarima de Madera",
@@ -265,6 +293,8 @@
     "Embudo de transferencia Higiénica de Almendra entre Áreas"
   ],
   "Enfriado": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Basurero Plástico",
     "Puerta de Plástico",
@@ -282,6 +312,8 @@
     "Ventilador (extractor de aire)"
   ],
   "Seleccionado de Almendra Pelada Deshidratada": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Asiento de Madera",
     "Techo de Plástico",
@@ -304,6 +336,8 @@
     "Instalaciones eléctrica"
   ],
   "Embalado de Broken - Almendra de Primera y Recorte": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Asiento de Madera",
     "Puerta de Vidrio",
@@ -326,6 +360,8 @@
     "Cuchillo de Cabo Plástico"
   ],
   "Pesado y Sellado": [
+    "Orden",
+    "Eliminación de Residuo",
     "Techo de Plástico",
     "Piso de Cerámica",
     "Recipiente de Acero Inoxidable",
@@ -345,6 +381,8 @@
     "Pared de Ladrillo frotacheado y Pintado"
   ],
   "Depósito de Producto Terminado \"A\"": [
+    "Orden",
+    "Eliminación de Residuo",
     "Luminarias",
     "Techo de Plástico",
     "Piso de Cerámica",
@@ -366,6 +404,8 @@
     "Instalaciones Eléctrica"
   ],
   "Almacén de Producto Terminado \"B\"": [
+    "Orden",
+    "Eliminación de Residuo",
     "Luminarias",
     "Techo de Plástico",
     "Piso de Cerámica",
@@ -382,6 +422,8 @@
     "Cortina de plástico"
   ],
   "Depósito de Residuos": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Recipiente de Acero inoxidable",
     "Balanza Digital",
@@ -401,6 +443,8 @@
     "Instalaciones Eléctrica"
   ],
   "Vestidor y Lavamanos 1 del Área del Seleccionado de Almendra Pelada Cruda": [
+    "Orden",
+    "Eliminación de Residuo",
     "Luminarias",
     "Piso de Cerámica",
     "Techo de Plástico",
@@ -418,6 +462,8 @@
     "Basurero Plástico"
   ],
   "Vestidor-Lavamanos \"2\" Pelado Mecánico y Seleccionado MPS": [
+    "Orden",
+    "Eliminación de Residuo",
     "Luminarias",
     "Piso de Cerámica",
     "Lavamanos con grifo",
@@ -429,6 +475,8 @@
     "Instalaciones Eléctrica"
   ],
   "Vestidor-Lavamanos \"3\" Sancochado y Secado de MPH (Cilindreros)": [
+    "Orden",
+    "Eliminación de Residuo",
     "Luminarias",
     "Piso de Cerámica",
     "Lavamanos con grifo",
@@ -441,6 +489,8 @@
     "Asiento de Madera"
   ],
   "Vestidor-Lavamanos \"4\" Seleccionado de Almendra Pelada Deshidratada": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Techo de Plástico",
     "Pared de Ladrillo frotacheado y pintado",
@@ -461,6 +511,8 @@
     "Alfombra del Piso de Entrada"
   ],
   "Sanitario y Ducha": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Techo de Plástico",
     "Utensilio de Limpieza",
@@ -475,6 +527,8 @@
     "Instalaciones Eléctrica"
   ],
   "Comedor": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Lavamanos con grifo",
     "Utensilio de Limpieza",
@@ -491,16 +545,22 @@
     "Casillero Metálico"
   ],
   "Externa e Interna": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de tierra (ingreso a la empresa)",
     "Piso de Cemento Frotacheado (Pasillo interno)",
     "Canal Efluentes/Drenaje",
     "Recipientes de desechos"
   ],
   "Tanque de Agua": [
+    "Orden",
+    "Eliminación de Residuo",
     "Tanque de Agua (Cemento frotacheado y Cerámica)",
     "Tanque Dosificador de Agua"
   ],
   "Depósito de Material de Embalaje Primario y Secundario": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Techo de Calamina y Machimbre de madera",
     "Pallet de Madera",
@@ -509,6 +569,8 @@
     "Utensilio de Limpieza"
   ],
   "Depósito de Material de Embalaje Materia Prima": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Techo de Calamina y Machimbre de madera",
     "Pallet de Madera",
@@ -517,6 +579,8 @@
     "Utensilio de Limpieza"
   ],
   "Lavandería de Área Blanca": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Techo de Plástico",
     "Pared de Cemento Frotacheado y Pintado",
@@ -531,6 +595,8 @@
     "Ventanas Plástica"
   ],
   "Depósito": [
+    "Orden",
+    "Eliminación de Residuo",
     "Piso de Cerámica",
     "Utensilio de Limpieza",
     "Techo de Calamina",

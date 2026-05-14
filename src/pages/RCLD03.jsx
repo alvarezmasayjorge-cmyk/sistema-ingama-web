@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { fmtDate, isExpired, isSoon, newSupplyId, newSupplyCode } from "../helpers";
 import { validateSupply, hasErrors } from "../validators";
 import PrintHeader from "../components/PrintHeader";
+import { exportRC_LD03 } from "../utils/exportXlsx";
 
 /**
  * RC.LD.03 — LISTADO DE INSUMOS DE LIMPIEZA Y DESINFECCIÓN
@@ -236,7 +237,7 @@ export default function RCLD03({ supplies, setSupplies, user, toast }) {
           <p className="page-subtitle">Lista maestra técnica · Rev. 03 · Vigente 09/05/2026 · {supplies.length} insumo(s)</p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button className="btn btn-outline" onClick={() => window.print()}>
+          <button className="btn btn-outline" onClick={() => { exportRC_LD03(supplies, user).catch(e => alert('Error: ' + e.message)); }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 5V3h8v2M4 11H2V6h12v5h-2M4 9h8v4H4z"/></svg>
             Imprimir
           </button>

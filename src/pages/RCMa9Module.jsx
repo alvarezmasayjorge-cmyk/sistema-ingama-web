@@ -3,6 +3,7 @@ import { AREAS } from "../data/initial";
 import { fmtDate, todayISO, newRcma9Id } from "../helpers";
 import SignatureBox from "../components/SigCanvas";
 import PrintHeader from "../components/PrintHeader";
+import { exportRC_MA09 } from "../utils/exportXlsx";
 
 /**
  * RC.MA.09 — CONTROL DE HISOPADO DE MANOS Y SUPERFICIE ATP
@@ -70,12 +71,12 @@ function RecordList({ records, user, onNew, onDetail }) {
         </div>
         {canCreate && (
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button className="btn btn-outline" onClick={() => window.print()}>
+            <button className="btn btn-outline" onClick={() => { exportRC_MA09(records, user).catch(e => alert('Error al generar Excel: ' + e.message)); }}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 5V3h8v2M4 11H2V6h12v5h-2M4 9h8v4H4z"/></svg>
               Imprimir
             </button>
             <button className="btn btn-primary" onClick={onNew}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M8 3v10M3 8h10"/></svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M8 3v10M3 8h10" /></svg>
               Nuevo Muestreo
             </button>
           </div>
@@ -168,7 +169,7 @@ function RecordList({ records, user, onNew, onDetail }) {
                     </td>
                     <td className="td-small">{r.correccion || r.accion || "—"}</td>
                     <td className="td-center">
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.3"><path d="M5 3l4 4-4 4"/></svg>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.3"><path d="M5 3l4 4-4 4" /></svg>
                     </td>
                   </tr>
                 );
@@ -180,7 +181,7 @@ function RecordList({ records, user, onNew, onDetail }) {
 
       {/* Reference */}
       <div className="info-banner info-primary">
-        <strong>Criterios ATP (Luminómetro):</strong> ≤100 RLU = <strong style={{color:"#059669"}}>Pasa</strong> · 101–500 RLU = <strong style={{color:"#d97706"}}>Precaución</strong> (repetir limpieza) · &gt;500 RLU = <strong style={{color:"#dc2626"}}>No Pasa</strong> (corrección inmediata obligatoria). Unidad: RLU (Relative Light Units).
+        <strong>Criterios ATP (Luminómetro):</strong> ≤100 RLU = <strong style={{ color: "#059669" }}>Pasa</strong> · 101–500 RLU = <strong style={{ color: "#d97706" }}>Precaución</strong> (repetir limpieza) · &gt;500 RLU = <strong style={{ color: "#dc2626" }}>No Pasa</strong> (corrección inmediata obligatoria). Unidad: RLU (Relative Light Units).
       </div>
     </div>
   );
@@ -228,7 +229,7 @@ function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
     <div className="page animate-fade-in">
       <div className="page-back-header">
         <button className="btn btn-ghost" onClick={onCancel}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M10 3L5 8l5 5"/></svg>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M10 3L5 8l5 5" /></svg>
           Volver
         </button>
         <div>
@@ -342,7 +343,7 @@ function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
         <div className="form-actions">
           <button className="btn btn-ghost" onClick={onCancel}>Cancelar</button>
           <button className="btn btn-primary" onClick={saveRecord}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 7l3 3 5-5"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 7l3 3 5-5" /></svg>
             Guardar Muestreo
           </button>
         </div>

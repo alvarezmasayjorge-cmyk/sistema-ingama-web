@@ -3,17 +3,30 @@ import { AREAS, ITEMS_AREA, FRECUENCIAS, MOMENTOS } from "../../../data/initial"
 import { getAreaConfig } from "../../../data/areasConfig";
 import { newRecordId, todayISO, getCurrentMonth } from "../../../helpers";
 import { validateRecord, hasErrors } from "../../../validators";
-import SignatureBox from "../../../components/SigCanvas";
 
-// Default frequencies per item (D for first items, S for rest as typical)
+// Default frequencies per item
 const DEFAULT_FREQ = "D";
 const DEFAULT_MOMENT = "F";
+
+// Helper: normaliza campo cumple (bool legacy → string nuevo)
+function normCumple(val) {
+  if (val === true) return "√";
+  if (val === false || val === undefined || val === null) return "";
+  return val; // ya es "√", "x" o ""
+}
 
 export default function RecordForm({ record, user, onSave, onCancel, allRecords, personnel, toast }) {
   const isNew = !record;
 
   const [form, setForm] = useState(() => {
-    const base = {
+    // Normalizar ítems del registro si vienen del formato antiguo (bool)
+    const rawItems = record?.items || {};
+    const normItems = {};
+    Object.keys(rawItems).forEach(k => {
+      normItems[k] = { ...rawItems[k], cumple: normCumple(rawItems[k]?.cumple) };
+    });
+
+    return {
       id: record?.id || newRecordId(allRecords),
       area: record?.area || AREAS[0],
       mes: record?.mes || getCurrentMonth(),
@@ -27,9 +40,9 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
       firmaSeg: record?.firmaSeg || null,
       obs: record?.obs || "",
       estado: record?.estado || "borrador",
-      items: record?.items || {},
+      items: normItems,
+      historialCambios: record?.historialCambios || [],
     };
-    return base;
   });
 
   const [errors, setErrors] = useState({});
@@ -46,7 +59,7 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
       ...f,
       items: {
         ...f.items,
-        [it]: { ...(f.items[it] || { freq: DEFAULT_FREQ, momento: DEFAULT_MOMENT, cumple: false, accion: "", obs: "" }), [k]: v },
+        [it]: { ...(f.items[it] || { freq: DEFAULT_FREQ, momento: DEFAULT_MOMENT, cumple: "", accion: "", obs: "" }), [k]: v },
       },
     }));
   };
@@ -88,12 +101,12 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
     toast?.info("Borrador guardado correctamente.");
   };
 
-  // Count compliance
+  // Count compliance (√ = cumple)
   const itemStats = useMemo(() => {
     let total = currentItems.length;
     let checked = 0;
     currentItems.forEach((it) => {
-      if (form.items[it]?.cumple) checked++;
+      if (form.items[it]?.cumple === "√") checked++;
     });
     return { total, checked, pct: total > 0 ? Math.round((checked / total) * 100) : 0 };
   }, [currentItems, form.items]);
@@ -120,7 +133,7 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
       </div>
 
       <div className="form-sections">
-        {/* ─── INFORMACIÓN GENERAL ─────────────────────────────── */}
+        {/* ─── INFORMACIÓN GENERAL ─────────────────────────── */}
         <div className="card">
           <h3 className="card-title">Información General</h3>
           <div className="form-grid-2">
@@ -240,9 +253,9 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
                 <tr>
                   <th style={{ width: 50 }}>Nro</th>
                   <th>Ítem de Limpieza</th>
-                  <th style={{ width: 90 }} className="td-center">Frecuencia</th>
+                  <th style={{ width: 110 }} className="td-center">Frecuencia</th>
                   <th style={{ width: 90 }} className="td-center">Momento</th>
-                  <th style={{ width: 80 }} className="td-center">Cumple</th>
+                  <th style={{ width: 90 }} className="td-center">Calificación</th>
                   <th style={{ width: 160 }}>Acción Correctiva</th>
                   <th style={{ width: 140 }}>Observación</th>
                 </tr>
@@ -252,6 +265,7 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
                   const val = form.items[it] || {};
                   const freq = val.freq || DEFAULT_FREQ;
                   const freqInfo = FRECUENCIAS.find(f => f.code === freq);
+                  const cumple = normCumple(val.cumple);
                   return (
                     <tr key={it} className={i % 2 === 0 ? "" : "row-alt"}>
                       <td className="td-center text-muted">{i + 1}</td>
@@ -262,14 +276,17 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
                           onChange={(e) => updItem(it, "freq", e.target.value)}
                           disabled={!canCtrl}
                           className="form-select form-select-sm"
-                          style={{ minWidth: 70, borderColor: freqInfo?.color || "var(--border-color)" }}
+                          style={{ minWidth: 55, borderColor: freqInfo?.color || "var(--border-color)" }}
                         >
                           {FRECUENCIAS.map((f) => (
                             <option key={f.code} value={f.code}>
-                              {f.code} — {f.label}
+                              {f.code}
                             </option>
                           ))}
                         </select>
+                        <span className="text-muted" style={{ fontSize: 10, display: "block" }}>
+                          {freqInfo?.label || freq}
+                        </span>
                       </td>
                       <td className="td-center">
                         <select
@@ -277,7 +294,7 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
                           onChange={(e) => updItem(it, "momento", e.target.value)}
                           disabled={!canCtrl}
                           className="form-select form-select-sm"
-                          style={{ minWidth: 70 }}
+                          style={{ minWidth: 60 }}
                         >
                           {MOMENTOS.map((m) => (
                             <option key={m.code} value={m.code}>
@@ -287,15 +304,23 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
                         </select>
                       </td>
                       <td className="td-center">
-                        <label className={`form-checkbox-card ${val.cumple ? "checked" : ""}`}>
-                          <input
-                            type="checkbox"
-                            disabled={!canCtrl}
-                            checked={val.cumple || false}
-                            onChange={(e) => updItem(it, "cumple", e.target.checked)}
-                          />
-                          <span>{val.cumple ? "✓" : "—"}</span>
-                        </label>
+                        <select
+                          value={cumple}
+                          onChange={(e) => updItem(it, "cumple", e.target.value)}
+                          disabled={!canCtrl}
+                          className="form-select form-select-sm"
+                          style={{
+                            minWidth: 60,
+                            fontWeight: 700,
+                            fontSize: 16,
+                            color: cumple === "√" ? "var(--color-success)" : cumple === "x" ? "var(--color-danger)" : "var(--text-secondary)",
+                            textAlign: "center",
+                          }}
+                        >
+                          <option value="">—</option>
+                          <option value="√">√</option>
+                          <option value="x">x</option>
+                        </select>
                       </td>
                       <td>
                         <input
@@ -304,7 +329,7 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
                           className="form-input form-input-sm"
                           value={val.accion || ""}
                           onChange={(e) => updItem(it, "accion", e.target.value)}
-                          placeholder={val.cumple === false ? "Requerida..." : "Opcional"}
+                          placeholder={cumple === "x" ? "Requerida..." : "Opcional"}
                         />
                       </td>
                       <td>
@@ -397,36 +422,6 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
               className="form-textarea"
               placeholder="Observaciones generales del registro..."
             />
-          </div>
-        </div>
-
-        {/* ─── FIRMAS DIGITALES ─────────────────────────────────── */}
-        <div className="card">
-          <h3 className="card-title">Firmas Digitales</h3>
-          <div className="form-grid-2">
-            <div>
-              <p className="form-label" style={{ marginBottom: 8 }}>Responsable de Control</p>
-              <SignatureBox
-                label="Firma Responsable Control"
-                signature={form.firmaCtrl}
-                signerName={form.respControl}
-                signerRole={user.role}
-                canSign={canCtrl && !form.firmaCtrl?.firmado}
-                onSign={(sig) => upd("firmaCtrl", sig)}
-              />
-            </div>
-            <div>
-              <p className="form-label" style={{ marginBottom: 8 }}>Responsable de Seguimiento</p>
-              <SignatureBox
-                label="Firma Responsable Seguimiento"
-                signature={form.firmaSeg}
-                signerName={form.respSeg}
-                signerRole="seguimiento"
-                canSign={false}
-                onSign={(sig) => upd("firmaSeg", sig)}
-              />
-              <p className="form-hint">La firma de seguimiento se registra en la etapa de verificación.</p>
-            </div>
           </div>
         </div>
 

@@ -3,6 +3,7 @@ import { fmtDate, isExpired, isSoon, newPersonnelId, todayISO } from "../helpers
 import { validatePersonnel, hasErrors } from "../validators";
 import SignatureBox from "../components/SigCanvas";
 import PrintHeader from "../components/PrintHeader";
+import { exportRC_LD02 } from "../utils/exportXlsx";
 
 /**
  * RC.LD.02 — PERSONAL AUTORIZADO PARA INGRESAR AL DEPÓSITO DE MATERIALES E INSUMOS
@@ -205,7 +206,7 @@ export default function RCLD02({ personnel, setPersonnel, user, toast }) {
           <p className="page-subtitle">Depósito de Materiales e Insumos · Rev. 02 · Vigente 09-05-2026 · {personnel.length} miembro(s)</p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button className="btn btn-outline" onClick={() => window.print()}>
+          <button className="btn btn-outline" onClick={() => { exportRC_LD02(personnel, user).catch(e => alert('Error: ' + e.message)); }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 5V3h8v2M4 11H2V6h12v5h-2M4 9h8v4H4z"/></svg>
             Imprimir
           </button>

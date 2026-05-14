@@ -39,10 +39,14 @@ export const AREAS_CONFIG = [
 
 // ─── FRECUENCIAS DE LIMPIEZA ──────────────────────────────────────────────────
 export const FRECUENCIAS = [
-  { code: "D", label: "Diario", color: "#3b82f6" },
-  { code: "S", label: "Semanal", color: "#8b5cf6" },
-  { code: "Q", label: "Quincenal", color: "#f59e0b" },
-  { code: "M", label: "Mensual", color: "#10b981" },
+  { code: "D",   label: "Diario",                              color: "#3b82f6" },
+  { code: "S",   label: "Semanal",                             color: "#8b5cf6" },
+  { code: "Q",   label: "Quincenal",                           color: "#f59e0b" },
+  { code: "M",   label: "Mensual",                             color: "#10b981" },
+  { code: "LM",  label: "Limpieza por Mantenimiento",           color: "#6366f1" },
+  { code: "CP",  label: "Cambio de Proceso",                   color: "#ec4899" },
+  { code: "CR",  label: "Cada Recepción",                      color: "#14b8a6" },
+  { code: "LIR", label: "Limpieza Inicial Reapertura del Área", color: "#f97316" },
 ];
 
 // ─── MOMENTO DE EJECUCIÓN ─────────────────────────────────────────────────────
