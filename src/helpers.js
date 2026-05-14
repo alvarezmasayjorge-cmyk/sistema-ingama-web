@@ -30,11 +30,29 @@ export const fmtDateLong = () => {
 };
 
 // ─── ID HELPERS ────────────────────────────────────────────────────────────────
-export const newRecordId = (records) =>
-  `RC.LD.01-2026-${String(records.length + 1).padStart(3, "0")}`;
+// Parse the numeric suffix from the last segment of an ID string
+const parseIdNum = (id) => {
+  const parts = id.split("-");
+  return parseInt(parts[parts.length - 1], 10) || 0;
+};
 
-export const newSupplyCode = (supplies) =>
-  `IN-${String(supplies.length + 1).padStart(3, "0")}`;
+export const newRecordId = (records) => {
+  const max = records.reduce((m, r) => Math.max(m, parseIdNum(r.id)), 0);
+  return `RC.LD.01-2026-${String(max + 1).padStart(3, "0")}`;
+};
+
+export const newRcma9Id = (records) => {
+  const max = records.reduce((m, r) => Math.max(m, parseIdNum(r.id)), 0);
+  return `RC.MA.09-2026-${String(max + 1).padStart(3, "0")}`;
+};
+
+export const newSupplyCode = (supplies) => {
+  const max = supplies.reduce((m, s) => {
+    const n = parseInt((s.codigo || "").replace("IN-", ""), 10);
+    return isNaN(n) ? m : Math.max(m, n);
+  }, 0);
+  return `IN-${String(max + 1).padStart(3, "0")}`;
+};
 
 export const newPersonnelId = (personnel) =>
   Math.max(...personnel.map((p) => p.id), 0) + 1;

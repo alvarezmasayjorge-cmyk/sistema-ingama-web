@@ -1,17 +1,25 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, Suspense, lazy } from "react";
 import { INIT_RECORDS, INIT_PERSONNEL, INIT_SUPPLIES, INIT_RCMA9 } from "./data/initial";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { useToast } from "./components/Toast";
 import ToastContainer from "./components/Toast";
 import Login from "./components/Login";
 import Sidebar from "./components/Sidebar";
-import Dashboard from "./pages/Dashboard";
-import RCLD01 from "./pages/RCLD01";
-import RCLD02 from "./pages/RCLD02";
-import RCLD03 from "./pages/RCLD03";
-import DocsModule from "./pages/DocsModule";
-import ConfigModule from "./pages/ConfigModule";
-import RCMa9Module from "./pages/RCMa9Module";
+
+// Lazy loading to reduce main bundle size
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const RCLD01 = lazy(() => import("./pages/RCLD01"));
+const RCLD02 = lazy(() => import("./pages/RCLD02"));
+const RCLD03 = lazy(() => import("./pages/RCLD03"));
+const RCMa9Module = lazy(() => import("./pages/RCMa9Module"));
+const DocsModule = lazy(() => import("./pages/DocsModule"));
+
+// Fallback loader
+const Fallback = () => (
+  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "var(--text-secondary)" }}>
+    <span className="spinner" style={{ marginRight: 8, borderColor: "var(--color-primary)", borderTopColor: "transparent" }}></span> Cargando módulo...
+  </div>
+);
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -42,13 +50,16 @@ export default function App() {
     rcld03: <RCLD03 supplies={supplies} setSupplies={setSupplies} user={user} toast={toast} />,
     rcma9: <RCMa9Module records={rcma9} setRecords={setRcma9} user={user} toast={toast} />,
     docs: <DocsModule records={records} rcma9={rcma9} />,
-    config: <ConfigModule />,
   };
 
   return (
     <div className="app-layout">
       <Sidebar view={view} setView={setView} user={user} onLogout={handleLogout} collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
-      <main className="app-main" key={view}>{pages[view] || pages.dashboard}</main>
+      <main className="app-main" key={view}>
+        <Suspense fallback={<Fallback />}>
+          {pages[view] || pages.dashboard}
+        </Suspense>
+      </main>
       <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
     </div>
   );

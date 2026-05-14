@@ -18,9 +18,20 @@ export default function Dashboard({ records, personnel, supplies, rcma9, setView
     const persVenc = personnel.filter((p) => isExpired(p.vigencia)).length;
     const persSoon = personnel.filter((p) => !isExpired(p.vigencia) && isSoon(p.vigencia)).length;
     const atpTotal = rcma9 ? rcma9.length : 0;
-    const atpConformes = rcma9 ? rcma9.filter(r => r.estado === "conforme").length : 0;
+    // Classify ATP by RLU thresholds
+    let atpPasa = 0, atpPrecaucion = 0, atpNoPasa = 0;
+    if (rcma9) {
+      rcma9.forEach(r => {
+        const n = parseFloat(r.resultado);
+        if (!isNaN(n)) {
+          if (n <= 100) atpPasa++;
+          else if (n <= 500) atpPrecaucion++;
+          else atpNoPasa++;
+        }
+      });
+    }
     const cumplimiento = total > 0 ? Math.round((aprobados / total) * 100) : 0;
-    return { total, aprobados, pendientes, rechazados, borradores, insVenc, insSoon, persVenc, persSoon, atpTotal, atpConformes, cumplimiento };
+    return { total, aprobados, pendientes, rechazados, borradores, insVenc, insSoon, persVenc, persSoon, atpTotal, atpPasa, atpPrecaucion, atpNoPasa, cumplimiento };
   }, [records, personnel, supplies, rcma9]);
 
   const pieData = useMemo(() => [
@@ -30,16 +41,22 @@ export default function Dashboard({ records, personnel, supplies, rcma9, setView
     { name: "Borrador", value: stats.borradores, color: CHART_COLORS.draft },
   ], [stats]);
 
-  const areaData = useMemo(() =>
-    AREAS.slice(0, 6).map((a) => {
+  const areaData = useMemo(() => {
+    const allAreas = AREAS.map((a) => {
       const recs = records.filter((x) => x.area === a);
       const ok = recs.filter((x) => x.estado === "aprobado").length;
       return {
         area: a.replace(" MP", "").replace(" Manual", "").replace(" y Sellado", ""),
         pct: recs.length ? Math.round((ok / recs.length) * 100) : 0,
+        total: recs.length
       };
-    }),
-  [records]);
+    });
+    // Mostrar las 6 áreas con menor cumplimiento (más críticas) que tengan al menos 1 registro
+    return allAreas
+      .filter(a => a.total > 0)
+      .sort((a, b) => a.pct - b.pct)
+      .slice(0, 6);
+  }, [records]);
 
   const alerts = useMemo(() => {
     const a = [];
@@ -48,6 +65,8 @@ export default function Dashboard({ records, personnel, supplies, rcma9, setView
     if (stats.persVenc > 0) a.push({ type: "danger", msg: `${stats.persVenc} autorización(es) vencida(s) — RC.LD.02`, action: () => setView("rcld02") });
     if (stats.persSoon > 0) a.push({ type: "warning", msg: `${stats.persSoon} autorización(es) vence(n) pronto`, action: () => setView("rcld02") });
     if (stats.pendientes > 0) a.push({ type: "info", msg: `${stats.pendientes} registro(s) pendiente(s) de verificación`, action: () => setView("rcld01") });
+    if (stats.atpNoPasa > 0) a.push({ type: "danger", msg: `${stats.atpNoPasa} hisopado(s) ATP NO PASA (>500 RLU) — RC.MA.09`, action: () => setView("rcma9") });
+    if (stats.atpPrecaucion > 0) a.push({ type: "warning", msg: `${stats.atpPrecaucion} hisopado(s) ATP en PRECAUCIÓN (101-500 RLU)`, action: () => setView("rcma9") });
     return a;
   }, [stats, setView]);
 
@@ -65,9 +84,9 @@ export default function Dashboard({ records, personnel, supplies, rcma9, setView
 
   const kpis = [
     { label: "Total Registros", val: stats.total, cls: "kpi-total", onClick: () => setView("rcld01"), sub: "RC.LD.01 · Actual" },
-    { label: "Aprobados", val: stats.aprobados, cls: "kpi-approved", onClick: () => setView("rcld01"), sub: "RC.LD.01 · Actual" },
-    { label: "Hisopados ATP", val: stats.atpTotal, cls: "kpi-pending", onClick: () => setView("rcma9"), sub: "RC.MA.9 · Total" },
-    { label: "ATP Conformes", val: stats.atpConformes, cls: "kpi-approved", onClick: () => setView("rcma9"), sub: "RC.MA.9 · Conforme" },
+    { label: "Aprobados", val: stats.aprobados, cls: "kpi-approved", onClick: () => setView("rcld01"), sub: "RC.LD.01 · Verificados" },
+    { label: "Hisopados ATP", val: stats.atpTotal, cls: "kpi-pending", onClick: () => setView("rcma9"), sub: `RC.MA.09 · ${stats.atpPasa} Pasa` },
+    { label: "ATP No Pasa", val: stats.atpNoPasa, cls: stats.atpNoPasa > 0 ? "kpi-rejected" : "kpi-approved", onClick: () => setView("rcma9"), sub: `RC.MA.09 · >500 RLU` },
   ];
 
   return (

@@ -1,0 +1,357 @@
+[
+  {
+    "file": "Registros de L+D 1 Recepcion y Almace. -Pre-Lim..xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 10 Seleccionado de almendra pelada en crudo v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 11 Clasificado de Almendra pelada por tipo v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 12 Recorte-OBSERBADO v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 13 Deshidratado de Almendra Pelada v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 14 Enfriado v3-2026.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 15 Seleccionado de almendra Deshidratada v3.xlsx",
+    "areaName": "Seleccionado de Almendra Pelada Deshidratada",
+    "itemCount": 21,
+    "items": [
+      "Eliminación de Residuos",
+      "Piso de Cerámica",
+      "Cinta transportadora (Lona Blanca-Lisa-1-2-3)",
+      "Cinta transportadora (Lona Blanca- 1-2 con Talisca)",
+      "Recipientes de Acero Inoxidable",
+      "Puerta de Vidrio",
+      "Techo de Plástico",
+      "Pared de Ladrillo frotacheado y plástico",
+      "Basurero (Chía -Chala)",
+      "Mesa de Soporte para cinta transportadora-lisa (1-2-3)",
+      "Mesa de soporte para  cinta transportadora con talisca (1-2-3)",
+      "Traga luces de vidrio",
+      "Cortina de Aire",
+      "Asiento de Madera",
+      "Brazos de salida de Almendra (Acero inoxidable)",
+      "Palled de Plástico",
+      "Utensilio de Limpieza",
+      "Luminaria",
+      "Parrilla de Madera",
+      "Aire acondicionado",
+      "Instalaciones eléctrica"
+    ],
+    "freqs": [
+      "D",
+      "D",
+      "D",
+      "S",
+      "D",
+      "D",
+      "D",
+      "D",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "S",
+      "M",
+      "CP",
+      "LM"
+    ],
+    "moments": [
+      "I",
+      "F",
+      "-",
+      "F",
+      "F",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "F",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F",
+      "-",
+      "F"
+    ]
+  },
+  {
+    "file": "Registros de L+D 16 Embalado de Broken v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 17  Pesado y Sellado al vacio v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 18 Producto Terminado A v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 19 Almacen de Producto Terminado B - v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 2 Recepciòn y Almace. MP.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 20 Deposito de Residuos v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 21 Vestidores y Lavamanos (1) Seleccionado almendra pelada v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 22 Vestidores y Lavamanos (2) Pelado Mecánico y Seleccionado de MPSC v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 23 Vestidores y Lavamanos (3) Sancochado y Secado de MP v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 24 Vestidores y Lavamanos (4) Seleccionado de Almendra Pelada Deshidratada.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 25 Sanitario y Ducha v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 26 Comedor v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 27 Àreas Externas v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 28 Tanque de Agua v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 29 Deposito de Material de Embalaje v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 3 Pre-Limp y Clasif v3..xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 30 Deposito de Material de Embalaje-Materia Prima v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 31 Lavanderia Área Blanca v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 32 Deposito v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 4 Secado de MPH v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 5 Seleccioín de MPS v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 5.1 Pre-Limpieza y Clasificado MPS v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 6 Almacenamiento de MPSC v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 7 Calderos v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 8 Sancochado v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  },
+  {
+    "file": "Registros de L+D 9 Pelado Mecaínico v3.xlsx",
+    "areaName": "",
+    "itemCount": 0,
+    "items": [],
+    "freqs": [],
+    "moments": []
+  }
+]

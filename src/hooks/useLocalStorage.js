@@ -33,7 +33,11 @@ export function useLocalStorage(key, initialValue, schemaKey = null) {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(key, JSON.stringify(storedValue));
+      const newValue = JSON.stringify(storedValue);
+      const oldValue = window.localStorage.getItem(key);
+      if (newValue !== oldValue) {
+        window.localStorage.setItem(key, newValue);
+      }
     } catch (error) {
       console.warn(`Error setting localStorage key "${key}":`, error);
     }

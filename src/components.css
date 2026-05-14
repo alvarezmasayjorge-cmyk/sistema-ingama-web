@@ -183,17 +183,62 @@
 .info-neutral { background: var(--border-light); border: 1px solid var(--border-color); color: var(--text-secondary); }
 .info-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-/* ─── SIGNATURE ─────────────────────────────────────────────────────── */
-.sig-signed { border: 1px solid #a7f3d0; border-radius: var(--radius-md); padding: 14px; background: #ecfdf5; }
-.sig-signed-header { display: flex; align-items: center; gap: 6px; color: #065f46; font-size: 13px; font-weight: 500; margin-bottom: 2px; }
-.sig-signed-date { font-size: 11px; color: #059669; }
-.sig-pending { border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 20px; text-align: center; color: var(--text-quaternary); display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.sig-pending p { font-size: 11px; }
-.sig-pending-label { font-size: 10px; }
-.sig-canvas-wrapper { display: flex; flex-direction: column; gap: 8px; }
-.sig-canvas-label { font-size: 11px; color: var(--text-tertiary); }
-.sig-canvas { border: 2px solid var(--color-primary-light); border-radius: var(--radius-md); width: 100%; cursor: crosshair; background: #fff; touch-action: none; }
-.sig-canvas-actions { display: flex; gap: 8px; }
+/* ─── SIGNATURE BOX ────────────────────────────────────────────────── */
+.sig-box { border-radius: var(--radius-md); padding: 16px; }
+.sig-box-signed { border: 1px solid #a7f3d0; background: #ecfdf5; }
+.sig-box-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.sig-box-title { font-size: 13px; font-weight: 600; color: #065f46; }
+.sig-box-details { display: flex; flex-direction: column; gap: 4px; }
+.sig-box-field { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.sig-box-label { color: #059669; font-weight: 500; min-width: 90px; }
+.sig-box-value { color: #065f46; }
+.sig-box-preview { margin-top: 8px; border: 1px solid #a7f3d0; border-radius: var(--radius-sm); overflow: hidden; background: #fff; max-width: 320px; }
+.sig-box-preview img { width: 100%; height: auto; display: block; }
+.sig-box-pending { border: 1px dashed var(--border-color); text-align: center; color: var(--text-quaternary); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 24px; }
+.sig-box-pending-text { font-size: 12px; margin: 0; }
+.sig-box-pending-label { font-size: 10px; }
+.sig-box-active { border: 2px solid var(--color-primary-light); background: #f8faff; }
+.sig-box-active-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; margin-bottom: 4px; }
+.sig-box-signer { font-size: 11px; color: var(--text-tertiary); margin-bottom: 8px; }
+.sig-canvas { border: 2px solid var(--color-primary-light); border-radius: var(--radius-sm); width: 100%; max-width: 320px; cursor: crosshair; background: #fff; touch-action: none; }
+.sig-box-actions { display: flex; gap: 8px; margin-top: 8px; }
+.sig-box-select { border: 1px solid var(--border-color); background: var(--bg-card); }
+.sig-box-select-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
+.sig-box-options { display: flex; gap: 8px; margin-top: 8px; }
+.sig-option-btn { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-card); cursor: pointer; text-align: left; flex: 1; transition: all var(--transition); }
+.sig-option-btn:hover { border-color: var(--color-primary); background: var(--color-primary-light); }
+.sig-option-title { font-size: 12px; font-weight: 600; color: var(--text-primary); display: block; }
+.sig-option-desc { font-size: 10px; color: var(--text-tertiary); display: block; margin-top: 2px; }
+
+/* ─── STATS ROW ────────────────────────────────────────────────────── */
+.stats-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.stat-mini { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px 14px; display: flex; flex-direction: column; flex: 1; min-width: 100px; }
+.stat-mini-value { font-size: 20px; font-weight: 700; font-family: 'Outfit', sans-serif; }
+.stat-mini-label { font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.3px; }
+
+/* ─── FILTERS ROW ──────────────────────────────────────────────────── */
+.filters-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+
+/* ─── PROGRESS BAR ─────────────────────────────────────────────────── */
+.progress-bar-container { }
+.progress-bar { height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden; }
+.progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
+
+/* ─── CHECKBOX CARD ────────────────────────────────────────────────── */
+.form-checkbox-card { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 1.5px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; transition: all var(--transition); font-size: 14px; color: var(--text-quaternary); }
+.form-checkbox-card input { display: none; }
+.form-checkbox-card.checked { border-color: var(--color-success); background: #ecfdf5; color: var(--color-success); font-weight: 700; }
+.form-checkbox-card:hover { border-color: var(--color-primary); }
+
+/* ─── ADDITIONAL BADGES ────────────────────────────────────────────── */
+.badge-neutral { background: var(--border-light); color: var(--text-tertiary); }
+
+/* ─── TABLE EXTRAS ─────────────────────────────────────────────────── */
+.table-row-clickable { cursor: pointer; transition: background var(--transition); }
+.table-row-clickable:hover { background: #f0f4ff !important; }
+.td-empty { text-align: center; padding: 48px 16px !important; color: var(--text-quaternary); }
+.td-empty p { margin-top: 12px; font-size: 13px; }
+.form-input-sm { padding: 4px 8px; font-size: 11px; }
 
 /* ─── DOCS ──────────────────────────────────────────────────────────── */
 .doc-tree { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: #94a3b8; line-height: 2; }
@@ -258,23 +303,69 @@
 .print-only { display: none; }
 
 @media print {
-  .sidebar, .page-header, .page-back-header, .filters-bar, .form-actions, .toast-container, .btn, .btn-primary, .btn-outline, .btn-ghost { display: none !important; }
-  .print-only { display: block; }
-  .app-layout { height: auto; overflow: visible; }
-  .app-main { overflow: visible; padding: 0; background: white; color: black; }
-  .page { padding: 0; max-width: 100%; margin: 0; }
-  body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  
-  .print-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid black; padding-bottom: 10px; margin-bottom: 20px; }
-  .print-logo { width: 100px; height: auto; object-fit: contain; }
-  .print-header h2 { font-size: 18px; margin: 0; color: black; }
-  .print-header p { font-size: 12px; margin: 4px 0 0; color: #555; }
-  
-  .card { border: none !important; box-shadow: none !important; margin-bottom: 20px !important; padding: 0 !important; page-break-inside: avoid; }
-  .data-table th { background-color: #f1f5f9 !important; color: black !important; border: 1px solid #ccc !important; }
-  .data-table td { border: 1px solid #ccc !important; padding: 4px 8px !important; }
-  
-  .form-input, .form-select, .form-textarea { border: none !important; border-bottom: 1px solid #ccc !important; border-radius: 0 !important; background: transparent !important; padding: 4px 0 !important; appearance: none; }
+  /* Hide UI elements */
+  .sidebar, .page-header, .page-back-header, .filters-bar, .filters-row,
+  .form-actions, .toast-container, .btn, .btn-primary, .btn-outline,
+  .btn-ghost, .stats-row, .alert-card, .info-banner, .card > h3.card-title + .checkbox-group,
+  .sig-box-actions, .sig-option-btn, .sig-box-select, .stat-mini { display: none !important; }
+  .print-only { display: block !important; }
+
+  /* Layout reset */
+  .app-layout { height: auto; overflow: visible; display: block; }
+  .app-main { overflow: visible; padding: 0; background: white; color: black; margin: 0; }
+  .page { padding: 10mm; max-width: 100%; margin: 0; }
+  body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-family: 'Arial', 'Helvetica', sans-serif; font-size: 10pt; }
+
+  /* ─── Official Header Table ─── */
+  .print-header-official { margin-bottom: 12px; }
+  .print-header-table { width: 100%; border-collapse: collapse; border: 2px solid #000; }
+  .print-header-table td { border: 1px solid #000; padding: 4px 8px; font-size: 9pt; }
+  .print-header-logo-cell { width: 120px; text-align: center; vertical-align: middle; }
+  .print-logo { width: 80px; height: auto; display: block; margin: 0 auto 4px; }
+  .print-company { font-size: 7pt; font-weight: 700; display: block; }
+  .print-header-center { text-align: center; font-size: 10pt; vertical-align: middle; }
+  .print-header-center-small { text-align: center; font-size: 7pt; color: #555; }
+  .print-header-right { text-align: right; font-size: 9pt; font-weight: 600; white-space: nowrap; }
+  .print-header-area { margin-top: 8px; padding: 4px 8px; border: 1px solid #000; font-size: 10pt; }
+
+  /* ─── Cards ─── */
+  .card { border: none !important; box-shadow: none !important; margin-bottom: 12px !important; padding: 0 !important; page-break-inside: avoid; }
+  .card-title { font-size: 10pt; border-bottom: 1px solid #000; padding-bottom: 4px; margin-bottom: 8px; }
+  .card-title-row { border-bottom: 1px solid #000; padding-bottom: 4px; margin-bottom: 8px; }
+  .card-warning { border: 1px solid #d97706 !important; padding: 8px !important; }
+
+  /* ─── Tables ─── */
+  .data-table th { background-color: #e5e7eb !important; color: #000 !important; border: 1px solid #000 !important; padding: 3px 6px !important; font-size: 7pt !important; }
+  .data-table td { border: 1px solid #000 !important; padding: 3px 6px !important; font-size: 8pt !important; }
+  .table-card { border: none !important; }
+  .table-responsive { overflow: visible !important; }
+
+  /* ─── Forms (print read-only) ─── */
+  .form-input, .form-select, .form-textarea { border: none !important; border-bottom: 1px solid #999 !important; border-radius: 0 !important; background: transparent !important; padding: 2px 0 !important; appearance: none; font-size: 9pt; }
   .form-checkbox { border: 1px solid #000; }
-  .sig-canvas { border: 1px solid #ccc !important; }
+  .form-grid-2 { gap: 8px !important; }
+  .form-label { font-size: 7pt !important; }
+
+  /* ─── Signatures (print) ─── */
+  .sig-box { padding: 8px !important; }
+  .sig-box-signed { border: 1px solid #000 !important; background: transparent !important; }
+  .sig-box-pending { border: 1px solid #999 !important; min-height: 60px; }
+  .sig-canvas { border: 1px solid #000 !important; }
+  .sig-box-preview img { max-width: 200px; }
+
+  /* ─── Detail fields ─── */
+  .detail-grid { gap: 4px !important; }
+  .detail-field { border: 1px solid #ccc !important; padding: 6px !important; }
+  .detail-label { font-size: 7pt !important; }
+  .detail-value { font-size: 9pt !important; }
+
+  /* ─── Badges in print ─── */
+  .badge, .status-badge { border: 1px solid #000 !important; background: transparent !important; color: #000 !important; font-size: 7pt !important; }
+  .badge-success { border-color: #059669 !important; }
+  .badge-danger { border-color: #dc2626 !important; }
+  .badge-warning { border-color: #d97706 !important; }
+
+  /* ─── Page breaks ─── */
+  .form-sections > .card { page-break-inside: avoid; }
 }
+

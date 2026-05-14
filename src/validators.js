@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { AREAS } from "./data/initial";
+import { isExpired } from "./helpers";
 
 // ─── HELPERS DE VALIDACIÓN ────────────────────────────────────────────────────
 const isEmpty = (v) => v === null || v === undefined || (typeof v === "string" && !v.trim());
@@ -18,11 +19,6 @@ const isValidDate = (d) => {
 const dateAfter = (d1, d2) => {
   if (!isValidDate(d1) || !isValidDate(d2)) return false;
   return new Date(d1) > new Date(d2);
-};
-
-const isExpired = (d) => {
-  if (!isValidDate(d)) return false;
-  return new Date(d) < new Date();
 };
 
 const isPhoneFormat = (v) => /^\d{4}-\d{4}$/.test(v);

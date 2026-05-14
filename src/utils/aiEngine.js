@@ -335,9 +335,9 @@ export function analyzeSupplies(supplies) {
   const total = supplies.length;
   if (total === 0) return { issues: [], healthScore: 100 };
 
-  const aprobados = supplies.filter((s) => s.estado === "aprobado").length;
-  const condicionados = supplies.filter((s) => s.estado === "condicionado").length;
-  const rechazados = supplies.filter((s) => s.estado === "rechazado").length;
+  const aprobados = supplies.filter((s) => (s.estadoTecnico || s.estado) === "aprobado").length;
+  const condicionados = supplies.filter((s) => (s.estadoTecnico || s.estado) === "condicionado").length;
+  const rechazados = supplies.filter((s) => (s.estadoTecnico || s.estado) === "rechazado").length;
 
   const venciendo = supplies.filter((s) => {
     if (!s.venc) return false;
@@ -374,7 +374,7 @@ export function analyzeSupplies(supplies) {
       severity: "media",
       label: "Condicionados",
       count: condicionados,
-      items: supplies.filter((s) => s.estado === "condicionado").slice(0, 3).map((s) => s.nombre),
+      items: supplies.filter((s) => (s.estadoTecnico || s.estado) === "condicionado").slice(0, 3).map((s) => s.nombre),
     });
   }
   if (rechazados > 0) {
@@ -382,7 +382,7 @@ export function analyzeSupplies(supplies) {
       severity: "alta",
       label: "Rechazados",
       count: rechazados,
-      items: supplies.filter((s) => s.estado === "rechazado").slice(0, 3).map((s) => s.nombre),
+      items: supplies.filter((s) => (s.estadoTecnico || s.estado) === "rechazado").slice(0, 3).map((s) => s.nombre),
     });
   }
   if (sinDocs.length > 0) {

@@ -28,6 +28,11 @@ const NAV_ICONS = {
       <path d="M4 1h7l4 4v11a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1z" /><path d="M11 1v4h4" /><path d="M6 9h6M6 12h4" />
     </svg>
   ),
+  flask: (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2h6M7 2v6L3 14a2 2 0 001.7 3h8.6A2 2 0 0015 14L11 8V2" />
+    </svg>
+  ),
   settings: (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
       <circle cx="9" cy="9" r="2.5" /><path d="M14.3 11a1.2 1.2 0 00.2 1.3l.1.1a1.5 1.5 0 11-2.1 2.1l-.1-.1a1.2 1.2 0 00-1.3-.2 1.2 1.2 0 00-.7 1.1v.2a1.5 1.5 0 01-3 0v-.1a1.2 1.2 0 00-.8-1.1 1.2 1.2 0 00-1.3.2l-.1.1a1.5 1.5 0 11-2.1-2.1l.1-.1a1.2 1.2 0 00.2-1.3 1.2 1.2 0 00-1.1-.7H2a1.5 1.5 0 010-3h.1A1.2 1.2 0 003.2 6a1.2 1.2 0 00-.2-1.3l-.1-.1a1.5 1.5 0 112.1-2.1l.1.1A1.2 1.2 0 006.4 3 1.2 1.2 0 007 1.8V1.5a1.5 1.5 0 013 0v.1a1.2 1.2 0 00.7 1.1 1.2 1.2 0 001.3-.2l.1-.1a1.5 1.5 0 112.1 2.1l-.1.1a1.2 1.2 0 00-.2 1.3c.1.3.4.6.8.7h.3a1.5 1.5 0 010 3h-.1a1.2 1.2 0 00-1.1.8z" />

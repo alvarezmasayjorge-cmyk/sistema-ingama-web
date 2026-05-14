@@ -1,0 +1,50 @@
+=== RC.LD.02 ===
+Sheets: BB, RC.01Personal_Autoriz_Depósito
+--- Sheet: BB ---
+R1: ISO 22002-1 | ISO 22002-1
+R5: ISO 22000
+--- Sheet: RC.01Personal_Autoriz_Depósito ---
+R1: REGISTRO | RC.LD.02
+R2: PERSONAL AUTORIZADO PARA
+INGRESAR AL DEPÓSITO DE MATERIALES E INSUMOS | No. Revisión: 02
+R3: Vigente A Partir de 09-05-26
+R5: Responsable de Control: __________________________________________________________________________________________________________________________________________________ | Firma: ________________________
+R6: Responsable de Seguimiento: _____________________________________________________________________________________________________________________________________________ | Firma: ________________________
+R8: N° | NOMBRE DEL MIEMBRO | CARGO | FIRMA | NÚMERO TELÉFONO CELULAR | FECHA DE AUTORIZACIÓN | CAPACITACIÓN RECIBIDA | MSDS / FICHAS TÉCNICAS REVISADAS | EPP Y DILUCIONES EVALUADO | NO MEZCLA DE QUÍMICOS EVALUADO | VIGENCIA / PRÓXIMA REVISIÓN | RESPONSABLE QUE AUTORIZA | ESTADO DE AUTORIZACIÓN | OBSERVACIONES / CONTROL COMPLEMENTARIO
+R9: 1
+R10: 2
+R11: 3
+R12: 4
+R13: 5
+R14: 6
+R15: 7
+R16: 8
+R17: 9
+R18: 10
+R20: AUTORIZACIÓN | El ingreso al depósito de materiales e insumos queda limitado al personal registrado, capacitado y con autorización vigente.
+R21: CAPACITACIÓN | Capacitación mínima: manejo seguro de químicos, lectura de MSDS/ficha técnica, uso de EPP, preparación de diluciones y prohibición de mezcla de químicos incompatibles.
+R22: VIGENCIA | La autorización debe revisarse al menos una vez al año o cuando exista cambio de personal, función, químico, método de preparación o desviación en el manejo de insumos.
+R23: CONTROL | El almacenamiento separado, inventario, condición del depósito y entradas/salidas de insumos se verifican mediante los registros aplicables del sistema de limpieza, desinfección y recepción de insumos.
+R32: CONTROL DE CAMBIOS
+R33: No. Revisión | Fecha de actualización | Descripción del cambio
+R34: 1 | 45383 | Creacion del documento
+R35: 02 | 09-05-2026 | Se agregan campos de capacitación recibida, evidencia/código de capacitación, verificación de MSDS/fichas técnicas, EPP, diluciones, no mezcla de químicos, fecha de autorización, vigencia/próxima revisión, responsable que autoriza, estado de autorización y control complementario del depósito.
+
+=== RC.LD.03 ===
+Sheets: LD
+--- Sheet: LD ---
+R0: BENEFICIADORA | REGISTRO | RC.LD.03
+R1: LISTADO DE INSUMOS DE LIMPIEZA Y DESINFECCIÓN | No. Revisión: 03
+R2: Vigente A Partir de: 09/05/2026
+R4: Responsable de Control: | Firma:_______________________
+R5: Responsable de Seguimiento: | Firma:_______________________
+R7: Código del Insumo | Nombre del Insumo | Descripción / Presentación | Unidad de Medida | Proveedor | Ubicación | Uso autorizado en planta | Ingrediente activo / componente principal | Concentración comercial | Apto industria alimentaria / superficies contacto | Superficie / aplicación autorizada | Ficha técnica | MSDS | Lote / referencia recepción | Fecha de vencimiento / caducidad | Estado técnico | Registro de recepción / evidencia | Observaciones
+R8: IN-001 | Jabón Yodado | Líquido - Bidón | Litros | Spartan | Lavandería de recipientes de área blanca y almacenamiento de materiales de insumos | Lavado de manos del personal | Yodo disponible / agente yodado según ficha técnica | Según ficha técnica del proveedor | Sí, para higiene de manos en planta | Manos del personal; no usar como detergente de superficies de contacto directo | Obligatoria | Obligatoria | Según envase y RC.EP.09 | Según envase y RC.EP.09 | Aprobado para uso definido | Registrar cada recepción en RC.EP.09 | Verificar rotulado, lote y vencimiento en recepción
+R9: IN-002 | Alcohol Guabirá | Líquido - Frasco | Litros | Guabirá | Lavandería de recipientes de área blanca y almacenamiento de materiales de insumos | Desinfección autorizada según IT.LD.01/plan vigente | Alcohol etílico según ficha técnica | Según etiqueta/ficha técnica del proveedor | Condicionado a ficha técnica/MSDS | Solo superficies o usos definidos en IT.LD.01; no sustituye la limpieza previa | Obligatoria | Obligatoria | Según envase y RC.EP.09 | Según envase y RC.EP.09 | Aprobado condicionado a documentación conforme | Registrar cada recepción en RC.EP.09 | No usar en presencia de llama/calor; controlar almacenamiento
+R10: IN-003 | Detergente Ace Patito | Granulado - Bidón | Kilos | Grupo Alicorp | Lavandería de recipientes de área blanca y almacenamiento de materiales de insumos | Limpieza de pisos y paredes | Tensoactivos/detergentes según ficha técnica | Según ficha técnica del proveedor | No aplica a superficies de contacto directo | Pisos, paredes y superficies sin contacto directo con el producto | Obligatoria | Obligatoria | Según envase y RC.EP.09 | Según envase y RC.EP.09 | Aprobado solo para uso no contacto directo | Registrar cada recepción en RC.EP.09 | Requiere enjuague cuando aplique; evitar contacto con producto
+R11: IN-004 | Parecetic Sanitizer FP 15 (Solución 15%) | Líquido - Bidón | Litros | Spartan | Lavandería de recipientes de área blanca y almacenamiento de materiales de insumos | Sanitización de superficies en contacto directo con Brazil Nuts | Ácido peracético / peróxido según ficha técnica | 13–17% declarado; uso según dilución IT.LD.01 | Sí, para superficies de contacto según ficha técnica | Lonas, mesas, recipientes, utensilios y superficies de contacto directo autorizadas | Obligatoria | Obligatoria | Según envase y RC.EP.09 | Según envase y RC.EP.09 | Aprobado para uso definido | Registrar cada recepción en RC.EP.09 | No mezclar con otros químicos; respetar dosis, temperatura y tiempo de contacto
+R19: RELACIÓN DOCUMENTAL Y CRITERIO DE USO
+R20: RC.LD.03 es la lista maestra de insumos aprobados para limpieza y desinfección. RC.EP.09 se mantiene como registro de recepción y debe respaldar proveedor, documentación recibida, lote, vencimiento, condición del envase y decisión de recepción.
+R21: Ningún insumo debe liberarse para uso si no cuenta con identificación, ficha técnica/MSDS cuando aplique, lote, vencimiento vigente y recepción aprobada o condicionada documentada en RC.EP.09.
+R23: CONTROL DE CAMBIOS | FECHA DE ACTUALIZACIÓN | DESCRIPCIÓN DEL CAMBIO
+R24: 03 | 09/05/2026 | Se actualiza el listado para incluir evidencia de aptitud para industria alimentaria/superficies de contacto, ingrediente activo, concentración comercial, ficha técnica, MSDS, lote, vencimiento, estado técnico y relación con RC.EP.09. Se corrige codificación única de insumos.

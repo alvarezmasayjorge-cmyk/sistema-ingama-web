@@ -1,4 +1,5 @@
 import areasItemsData from './areas_items.json';
+import { AREAS_CONFIG, FRECUENCIAS, MOMENTOS, DOC_INFO } from './areasConfig';
 
 // ─── USERS ─────────────────────────────────────────────────────────────────────
 export const USERS_DB = [
@@ -8,8 +9,12 @@ export const USERS_DB = [
 ];
 
 // ─── AREAS & ITEMS ─────────────────────────────────────────────────────────────
-export const AREAS = Object.keys(areasItemsData).sort();
+// Ordenadas por número de registro oficial (1-33)
+export const AREAS = AREAS_CONFIG.map(a => a.key);
 export const ITEMS_AREA = areasItemsData;
+
+// Re-export para acceso directo
+export { AREAS_CONFIG, FRECUENCIAS, MOMENTOS, DOC_INFO };
 
 // ─── STATUS MAPS ───────────────────────────────────────────────────────────────
 export const STATUS = {
@@ -19,27 +24,15 @@ export const STATUS = {
   rechazado: { label: "Rechazado", bg: "var(--status-rejected-bg)", text: "var(--status-rejected-text)", dot: "var(--status-rejected-dot)", cls: "status-rejected" },
 };
 
-export const PERSONNEL_STATUS = {
-  autorizado: { cls: "status-approved" },
-  pendiente: { cls: "status-pending" },
-  suspendido: { cls: "status-rejected" },
-};
-
-export const SUPPLY_STATUS = {
-  aprobado: { cls: "status-approved" },
-  condicionado: { cls: "status-pending" },
-  rechazado: { cls: "status-rejected" },
-};
-
 // ─── INITIAL DATA ──────────────────────────────────────────────────────────────
 export const INIT_RECORDS = [
-  { id: "RC.LD.01-2026-001", area: "Sanitario y Ducha", mes: "Mayo 2026", respControl: "Carlos Mamani", respSeg: "Rosa Vaca Méndez", estado: "aprobado", fecha: "2026-05-05", resultado: "conforme", correccion: "", liberacion: "si", firmaCtrl: true, firmaSeg: true, obs: "Sin novedad. Área conforme.", itemsCheck: {} },
-  { id: "RC.LD.01-2026-002", area: "Comedor", mes: "Mayo 2026", respControl: "Carlos Mamani", respSeg: "Rosa Vaca Méndez", estado: "firmado_control", fecha: "2026-05-07", resultado: "no_conforme", correccion: "Se volvió a limpiar mesas.", liberacion: "si", firmaCtrl: true, firmaSeg: false, obs: "Mesas sucias.", itemsCheck: {} }
+  { id: "RC.LD.01-2026-001", area: "Sanitario y Ducha", mes: "Mayo 2026", respControl: "Carlos Mamani", respSeg: "Rosa Vaca Méndez", estado: "aprobado", fecha: "2026-05-05", resultado: "conforme", correccion: "", liberacion: "si", firmaCtrl: { firmado: true, nombre: "Carlos Mamani", rol: "control", fechaHora: "2026-05-05T08:30:00" }, firmaSeg: { firmado: true, nombre: "Rosa Vaca Méndez", rol: "seguimiento", fechaHora: "2026-05-05T10:15:00" }, obs: "Sin novedad. Área conforme.", items: {} },
+  { id: "RC.LD.01-2026-002", area: "Comedor", mes: "Mayo 2026", respControl: "Carlos Mamani", respSeg: "Rosa Vaca Méndez", estado: "firmado_control", fecha: "2026-05-07", resultado: "no_conforme", correccion: "Se volvió a limpiar mesas.", liberacion: "si", firmaCtrl: { firmado: true, nombre: "Carlos Mamani", rol: "control", fechaHora: "2026-05-07T07:00:00" }, firmaSeg: null, obs: "Mesas sucias.", items: {} }
 ];
 
 export const INIT_PERSONNEL = [
-  { id: 1, nombre: "Carlos Mamani", cargo: "Operario de Planta A", telefono: "7521-3456", fechaAut: "2026-01-15", codCap: "CAP-2026-001", fechaCap: "2026-01-10", msds: true, epp: true, noMezcla: true, vigencia: "2026-12-31", estado: "autorizado", autorizadoPor: "Rosa Vaca M." },
-  { id: 2, nombre: "Rosa Vaca Méndez", cargo: "Jefe de Calidad", telefono: "7654-9876", fechaAut: "2026-01-15", codCap: "CAP-2026-001", fechaCap: "2026-01-10", msds: true, epp: true, noMezcla: true, vigencia: "2026-12-31", estado: "autorizado", autorizadoPor: "Gerencia" },
+  { id: 1, nombre: "Carlos Mamani", cargo: "Operario de Planta A", telefono: "7521-3456", fechaAut: "2026-01-15", capacitacion: "CAP-2026-001 / Manejo Químicos", msds: true, epp: true, noMezcla: true, vigencia: "2026-12-31", estado: "autorizado", autorizadoPor: "Rosa Vaca M." },
+  { id: 2, nombre: "Rosa Vaca Méndez", cargo: "Jefe de Calidad", telefono: "7654-9876", fechaAut: "2026-01-15", capacitacion: "CAP-2026-001 / Manejo Químicos", msds: true, epp: true, noMezcla: true, vigencia: "2026-12-31", estado: "autorizado", autorizadoPor: "Gerencia" },
 ];
 
 export const INIT_SUPPLIES = [
@@ -48,8 +41,8 @@ export const INIT_SUPPLIES = [
 ];
 
 export const INIT_RCMA9 = [
-  { id: "RC.MA.9-2026-001", fecha: "2026-05-09", area: "Sanitario y Ducha", punto: "Lavamanos", tipo: "superficie", responsable: "Carlos Mamani", resultado: "15 URL", limite: "< 50 URL", estado: "conforme", accion: "", obs: "Conforme", firma: true },
-  { id: "RC.MA.9-2026-002", fecha: "2026-05-09", area: "Pelado Mecánico", punto: "Bañadores", tipo: "superficie", responsable: "Rosa Vaca Méndez", resultado: "120 URL", limite: "< 50 URL", estado: "no_conforme", accion: "Re-lavado y desinfección", obs: "Fuera de límite", firma: true }
+  { id: "RC.MA.09-2026-001", fecha: "2026-05-09", area: "Sanitario y Ducha", identificacion: "Lavamanos", tipo: "superficie", respControl: "Carlos Mamani", resultado: "15", correccion: "", obs: "Conforme", firmaCtrl: { firmado: true, nombre: "Carlos Mamani", rol: "control", fechaHora: "2026-05-09T09:00:00", tipo: "digital" }, firmaSeg: null },
+  { id: "RC.MA.09-2026-002", fecha: "2026-05-09", area: "Pelado Mecánico", identificacion: "Bañadores", tipo: "superficie", respControl: "Rosa Vaca Méndez", resultado: "520", correccion: "Re-lavado y desinfección", obs: "Fuera de límite", firmaCtrl: { firmado: true, nombre: "Rosa Vaca Méndez", rol: "seguimiento", fechaHora: "2026-05-09T10:30:00", tipo: "digital" }, firmaSeg: null },
 ];
 
 // ─── NAV ITEMS ─────────────────────────────────────────────────────────────────
@@ -58,6 +51,6 @@ export const NAV_ITEMS = [
   { id: "rcld01", label: "RC.LD.01 Limpieza", icon: "cleaning" },
   { id: "rcld02", label: "RC.LD.02 Personal", icon: "people" },
   { id: "rcld03", label: "RC.LD.03 Insumos", icon: "inventory" },
-  { id: "rcma9", label: "RC.MA.9 Hisopado", icon: "inventory" },
+  { id: "rcma9", label: "RC.MA.09 Hisopado", icon: "flask" },
   { id: "docs", label: "Documentos", icon: "docs" }
 ];

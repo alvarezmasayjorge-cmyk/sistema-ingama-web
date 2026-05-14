@@ -27,15 +27,6 @@ export default function Login({ onLogin }) {
     [username, password, onLogin]
   );
 
-  const quickLogin = useCallback(
-    (u) => {
-      setUsername(u.username);
-      setPassword(u.password);
-      setLoading(true);
-      setTimeout(() => onLogin(u), 400);
-    },
-    [onLogin]
-  );
 
   return (
     <div className="login-page">

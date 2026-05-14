@@ -4,7 +4,11 @@ import { fmtDate, todayISO } from "../helpers";
 export default function DocsModule({ records, rcma9 }) {
   const atpStats = useMemo(() => {
     if (!rcma9 || rcma9.length === 0) return { total: 0, conformes: 0, noConformes: 0, pct: 0 };
-    const conformes = rcma9.filter(r => r.estado === 'conforme').length;
+    // Classify by RLU threshold (<= 100 pasa)
+    const conformes = rcma9.filter(r => {
+      const val = parseFloat(r.resultado);
+      return !isNaN(val) && val <= 100;
+    }).length;
     return {
       total: rcma9.length,
       conformes,

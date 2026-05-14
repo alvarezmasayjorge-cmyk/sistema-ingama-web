@@ -1,12 +1,38 @@
 import { useState, useMemo, useCallback } from "react";
 import { fmtDate, isExpired, isSoon, newSupplyId, newSupplyCode } from "../helpers";
 import { validateSupply, hasErrors } from "../validators";
+import PrintHeader from "../components/PrintHeader";
+
+/**
+ * RC.LD.03 — LISTADO DE INSUMOS DE LIMPIEZA Y DESINFECCIÓN
+ * Columnas reales del Excel Rev.03 (actualizado 09/05/2026):
+ * Código del Insumo | Nombre del Insumo | Descripción/Presentación | Unidad de Medida
+ * | Proveedor | Ubicación | Uso autorizado en planta | Ingrediente activo/componente principal
+ * | Concentración comercial | Apto industria alimentaria/superficies contacto
+ * | Superficie/aplicación autorizada | Ficha técnica | MSDS | Lote/referencia recepción
+ * | Fecha de vencimiento/caducidad | Estado técnico | Registro de recepción/evidencia | Observaciones
+ */
 
 const EMPTY_SUPPLY = {
-  codigo: "", nombre: "", unidad: "Litro", proveedor: "", ingrediente: "",
-  conc: "", apta: false, superficie: "", ft: false, msds: false,
-  lote: "", venc: "", estado: "condicionado",
+  codigo: "", nombre: "", descripcion: "", unidad: "Litros",
+  proveedor: "", ubicacion: "Lavandería de recipientes de área blanca y almacenamiento de materiales de insumos",
+  usoAutorizado: "", ingrediente: "", concentracion: "",
+  aptoAlimentaria: false, superficieAutorizada: "",
+  ft: false, msds: false,
+  lote: "", venc: "",
+  estadoTecnico: "aprobado",
+  registroRecepcion: "",
+  observaciones: "",
 };
+
+const UNIDADES = ["Litros", "Kilos", "Galones", "Unidades", "Frascos", "Bidones"];
+
+const ESTADO_OPTIONS = [
+  { value: "aprobado", label: "Aprobado para uso definido" },
+  { value: "condicionado", label: "Aprobado condicionado a documentación" },
+  { value: "no_contacto", label: "Aprobado solo para uso no contacto directo" },
+  { value: "rechazado", label: "Rechazado" },
+];
 
 function SupplyForm({ supply, onSave, onCancel, allSupplies, toast }) {
   const isNew = !supply;
@@ -35,80 +61,106 @@ function SupplyForm({ supply, onSave, onCancel, allSupplies, toast }) {
   };
 
   return (
-    <div className="card animate-fade-in" style={{ maxWidth: 700 }}>
+    <div className="card animate-fade-in" style={{ maxWidth: 800 }}>
       <h3 className="card-title">{isNew ? "Agregar Insumo" : "Editar Insumo"}</h3>
+
+      {/* Identificación */}
       <div className="form-grid-2">
         <div className="form-group">
-          <label className="form-label">Código</label>
-          <input className={`form-input form-input-readonly ${errors.codigo ? "form-input-error" : ""}`} value={form.codigo} readOnly />
-          {errors.codigo && <span className="form-error-msg">{errors.codigo}</span>}
+          <label className="form-label">Código del Insumo</label>
+          <input className="form-input form-input-readonly" value={form.codigo} readOnly />
         </div>
         <div className="form-group">
-          <label className="form-label">Nombre *</label>
-          <input className={`form-input ${errors.nombre ? "form-input-error" : ""}`} value={form.nombre} onChange={(e) => upd("nombre", e.target.value)} placeholder="Nombre del insumo" />
+          <label className="form-label">Nombre del Insumo *</label>
+          <input className={`form-input ${errors.nombre ? "form-input-error" : ""}`} value={form.nombre} onChange={(e) => upd("nombre", e.target.value)} placeholder="Ej: Jabón Yodado" />
           {errors.nombre && <span className="form-error-msg">{errors.nombre}</span>}
         </div>
         <div className="form-group">
-          <label className="form-label">Unidad</label>
+          <label className="form-label">Descripción / Presentación</label>
+          <input className="form-input" value={form.descripcion} onChange={(e) => upd("descripcion", e.target.value)} placeholder="Ej: Líquido - Bidón" />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Unidad de Medida</label>
           <select className="form-select" value={form.unidad} onChange={(e) => upd("unidad", e.target.value)}>
-            {["Litro", "Kg", "Galón", "Unidad"].map((u) => <option key={u}>{u}</option>)}
+            {UNIDADES.map((u) => <option key={u}>{u}</option>)}
           </select>
         </div>
         <div className="form-group">
           <label className="form-label">Proveedor *</label>
-          <input className={`form-input ${errors.proveedor ? "form-input-error" : ""}`} value={form.proveedor} onChange={(e) => upd("proveedor", e.target.value)} />
+          <input className={`form-input ${errors.proveedor ? "form-input-error" : ""}`} value={form.proveedor} onChange={(e) => upd("proveedor", e.target.value)} placeholder="Ej: Spartan" />
           {errors.proveedor && <span className="form-error-msg">{errors.proveedor}</span>}
         </div>
         <div className="form-group">
-          <label className="form-label">Ingrediente activo *</label>
-          <input className={`form-input ${errors.ingrediente ? "form-input-error" : ""}`} value={form.ingrediente} onChange={(e) => upd("ingrediente", e.target.value)} />
+          <label className="form-label">Ubicación</label>
+          <input className="form-input" value={form.ubicacion} onChange={(e) => upd("ubicacion", e.target.value)} />
+        </div>
+      </div>
+
+      {/* Uso y composición */}
+      <h3 className="card-title" style={{ marginTop: 20 }}>Composición y Uso</h3>
+      <div className="form-grid-2">
+        <div className="form-group">
+          <label className="form-label">Uso autorizado en planta</label>
+          <input className="form-input" value={form.usoAutorizado} onChange={(e) => upd("usoAutorizado", e.target.value)} placeholder="Ej: Lavado de manos del personal" />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Ingrediente activo / componente principal *</label>
+          <input className={`form-input ${errors.ingrediente ? "form-input-error" : ""}`} value={form.ingrediente} onChange={(e) => upd("ingrediente", e.target.value)} placeholder="Ej: Ácido peracético" />
           {errors.ingrediente && <span className="form-error-msg">{errors.ingrediente}</span>}
         </div>
         <div className="form-group">
-          <label className="form-label">Concentración</label>
-          <input className={`form-input ${errors.conc ? "form-input-error" : ""}`} value={form.conc} onChange={(e) => upd("conc", e.target.value)} placeholder="Ej: 15% p/v" />
-          {errors.conc && <span className="form-error-msg">{errors.conc}</span>}
-        </div>
-        <div className="form-group form-group-full">
-          <label className="form-label">Superficie de uso</label>
-          <input className="form-input" value={form.superficie} onChange={(e) => upd("superficie", e.target.value)} placeholder="Ej: Contacto directo con alimento" />
+          <label className="form-label">Concentración comercial</label>
+          <input className="form-input" value={form.concentracion} onChange={(e) => upd("concentracion", e.target.value)} placeholder="Ej: 13-17% declarado" />
         </div>
         <div className="form-group">
-          <label className="form-label">Lote</label>
-          <input className={`form-input ${errors.lote ? "form-input-error" : ""}`} value={form.lote} onChange={(e) => upd("lote", e.target.value)} />
-          {errors.lote && <span className="form-error-msg">{errors.lote}</span>}
+          <label className="form-label">Superficie / aplicación autorizada</label>
+          <input className="form-input" value={form.superficieAutorizada} onChange={(e) => upd("superficieAutorizada", e.target.value)} placeholder="Ej: Lonas, mesas, recipientes" />
+        </div>
+      </div>
+
+      {/* Documentación y trazabilidad */}
+      <h3 className="card-title" style={{ marginTop: 20 }}>Documentación y Trazabilidad</h3>
+      <div className="checkbox-group" style={{ marginBottom: 12 }}>
+        {[
+          ["aptoAlimentaria", "Apto industria alimentaria / superficies contacto"],
+          ["ft", "Ficha Técnica disponible (Obligatoria)"],
+          ["msds", "MSDS / Hoja de Seguridad disponible (Obligatoria)"],
+        ].map(([k, l]) => (
+          <label key={k} className={`checkbox-card ${errors[k] ? "checkbox-card-error" : ""}`}>
+            <input type="checkbox" checked={form[k]} onChange={(e) => upd(k, e.target.checked)} className="form-checkbox" />
+            <span>{l}</span>
+          </label>
+        ))}
+      </div>
+      {(errors.ft || errors.msds) && <span className="form-error-msg">{errors.ft || errors.msds}</span>}
+
+      <div className="form-grid-2">
+        <div className="form-group">
+          <label className="form-label">Lote / Referencia recepción</label>
+          <input className="form-input" value={form.lote} onChange={(e) => upd("lote", e.target.value)} placeholder="Según envase y RC.EP.09" />
         </div>
         <div className="form-group">
-          <label className="form-label">Fecha de vencimiento *</label>
+          <label className="form-label">Fecha de vencimiento / caducidad *</label>
           <input type="date" className={`form-input ${errors.venc ? "form-input-error" : ""}`} value={form.venc} onChange={(e) => upd("venc", e.target.value)} />
           {errors.venc && <span className="form-error-msg">{errors.venc}</span>}
         </div>
         <div className="form-group">
-          <label className="form-label">Estado</label>
-          <select className={`form-select ${errors.estado ? "form-input-error" : ""}`} value={form.estado} onChange={(e) => upd("estado", e.target.value)}>
-            <option value="aprobado">Aprobado</option>
-            <option value="condicionado">Condicionado</option>
-            <option value="rechazado">Rechazado</option>
+          <label className="form-label">Estado técnico</label>
+          <select className="form-select" value={form.estadoTecnico} onChange={(e) => upd("estadoTecnico", e.target.value)}>
+            {ESTADO_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
-          {errors.estado && <span className="form-error-msg">{errors.estado}</span>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Registro de recepción / evidencia</label>
+          <input className="form-input" value={form.registroRecepcion} onChange={(e) => upd("registroRecepcion", e.target.value)} placeholder="Registrar cada recepción en RC.EP.09" />
         </div>
       </div>
-      <div className="form-group" style={{ marginTop: "1rem" }}>
-        <label className="form-label">Verificaciones</label>
-        <div className="checkbox-group">
-          {[["apta", "Apta para contacto con alimento"], ["ft", "Ficha técnica disponible"], ["msds", "Hoja de seguridad (MSDS) disponible"]].map(([k, l]) => (
-            <label key={k} className={`checkbox-card ${errors[k] ? "checkbox-card-error" : ""}`}>
-              <input type="checkbox" checked={form[k]} onChange={(e) => upd(k, e.target.checked)} className="form-checkbox" />
-              <span>{l}</span>
-            </label>
-          ))}
-        </div>
-        {(errors.apta || errors.ft || errors.msds) && (
-          <span className="form-error-msg">
-            {errors.apta || errors.ft || errors.msds}
-          </span>
-        )}
+
+      <div className="form-group" style={{ marginTop: 12 }}>
+        <label className="form-label">Observaciones</label>
+        <textarea className="form-textarea" value={form.observaciones} onChange={(e) => upd("observaciones", e.target.value)} rows={2} placeholder="Ej: No mezclar con otros químicos; respetar dosis, temperatura y tiempo de contacto" />
       </div>
+
       <div className="form-actions">
         <button className="btn btn-ghost" onClick={onCancel}>Cancelar</button>
         <button className="btn btn-primary" onClick={save}>
@@ -123,14 +175,25 @@ export default function RCLD03({ supplies, setSupplies, user, toast }) {
   const [showForm, setShowForm] = useState(false);
   const [editSupply, setEditSupply] = useState(null);
   const [search, setSearch] = useState("");
+  const [filterEstado, setFilterEstado] = useState("");
 
-  const alertCount = useMemo(() => supplies.filter((s) => isExpired(s.venc) || s.estado === "rechazado").length, [supplies]);
+  const alertCount = useMemo(() => supplies.filter((s) => isExpired(s.venc) || s.estadoTecnico === "rechazado").length, [supplies]);
 
   const filtered = useMemo(() =>
-    supplies.filter((s) =>
-      !search || s.nombre.toLowerCase().includes(search.toLowerCase()) || s.codigo.toLowerCase().includes(search.toLowerCase()) || s.proveedor.toLowerCase().includes(search.toLowerCase())
-    ),
-  [supplies, search]);
+    supplies.filter((s) => {
+      if (filterEstado && (s.estadoTecnico || s.estado) !== filterEstado) return false;
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return s.nombre.toLowerCase().includes(q) || s.codigo.toLowerCase().includes(q) || s.proveedor.toLowerCase().includes(q) || (s.ingrediente || "").toLowerCase().includes(q);
+    }),
+  [supplies, search, filterEstado]);
+
+  const stats = useMemo(() => ({
+    total: supplies.length,
+    aprobado: supplies.filter(s => (s.estadoTecnico || s.estado) === "aprobado").length,
+    condicionado: supplies.filter(s => (s.estadoTecnico || s.estado) === "condicionado").length,
+    alertas: alertCount,
+  }), [supplies, alertCount]);
 
   const handleSave = useCallback((supply) => {
     if (editSupply) {
@@ -158,7 +221,7 @@ export default function RCLD03({ supplies, setSupplies, user, toast }) {
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M10 3L5 8l5 5"/></svg>
             Volver
           </button>
-          <h1 className="page-title">RC.LD.03 — Insumos L&D</h1>
+          <h1 className="page-title">RC.LD.03 — Listado de Insumos de Limpieza y Desinfección</h1>
         </div>
         <SupplyForm supply={editSupply} onSave={handleSave} onCancel={() => { setShowForm(false); setEditSupply(null); }} allSupplies={supplies} toast={toast} />
       </div>
@@ -170,7 +233,7 @@ export default function RCLD03({ supplies, setSupplies, user, toast }) {
       <div className="page-header">
         <div>
           <h1 className="page-title">RC.LD.03 — Insumos de Limpieza y Desinfección</h1>
-          <p className="page-subtitle">Lista maestra técnica · Rev. 02 · {supplies.length} insumo(s)</p>
+          <p className="page-subtitle">Lista maestra técnica · Rev. 03 · Vigente 09/05/2026 · {supplies.length} insumo(s)</p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <button className="btn btn-outline" onClick={() => window.print()}>
@@ -186,90 +249,118 @@ export default function RCLD03({ supplies, setSupplies, user, toast }) {
         </div>
       </div>
 
-      {/* Elemento solo visible en impresión */}
-      <div className="print-only">
-         <div className="print-header">
-            <img src="/logo.png" alt="Logo INGAMA" className="print-logo" />
-            <div>
-              <h2>RC.LD.03 REGISTRO LISTA DE INSUMOS DE LIMPIEZA</h2>
-              <p>Insumos autorizados FSSC 22000</p>
-            </div>
-         </div>
+      <PrintHeader docCode="RC.LD.03" />
+
+      {/* Stats row */}
+      <div className="stats-row" style={{ marginBottom: 16 }}>
+        {[
+          { label: "Total", value: stats.total, color: "var(--color-primary)" },
+          { label: "Aprobados", value: stats.aprobado, color: "var(--color-success)" },
+          { label: "Condicionados", value: stats.condicionado, color: "var(--color-warning)" },
+          { label: "Alertas", value: stats.alertas, color: "var(--color-danger)" },
+        ].map(s => (
+          <div key={s.label} className="stat-mini" style={{ borderLeft: `3px solid ${s.color}` }}>
+            <span className="stat-mini-value">{s.value}</span>
+            <span className="stat-mini-label">{s.label}</span>
+          </div>
+        ))}
       </div>
 
       {alertCount > 0 && (
-        <div className="alert-card alert-danger">
+        <div className="alert-card alert-danger" style={{ marginBottom: 12 }}>
           <span className="alert-dot" />
-          <span className="alert-msg">🚨 {alertCount} insumo(s) vencido(s) o rechazado(s). <strong>No deben usarse en planta.</strong></span>
+          <span>🚨 {alertCount} insumo(s) vencido(s) o rechazado(s). <strong>No deben usarse en planta.</strong></span>
         </div>
       )}
 
-      <div className="filters-bar">
-        <div className="input-wrapper input-search">
+      <div className="filters-row">
+        <div className="input-wrapper" style={{ flex: 1, maxWidth: 300 }}>
           <svg className="input-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
             <circle cx="6.5" cy="6.5" r="5" /><path d="M14 14l-3.5-3.5" />
           </svg>
-          <input className="form-input" placeholder="Buscar nombre, código o proveedor..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          <input className="form-input" placeholder="Buscar nombre, código, proveedor o ingrediente..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
+        <select className="form-select" value={filterEstado} onChange={(e) => setFilterEstado(e.target.value)} style={{ maxWidth: 250 }}>
+          <option value="">Todos los estados</option>
+          {ESTADO_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
         <span className="filters-count">{filtered.length} insumo(s)</span>
       </div>
 
       <div className="card table-card">
-        <table className="data-table">
-          <thead>
-            <tr>
-              {["Código", "Nombre", "Proveedor", "Ingred. activo", "Apta", "FT", "MSDS", "Lote", "Vencimiento", "Estado", ""].map((h) => (
-                <th key={h || "action"}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((s) => {
-              const venc = isExpired(s.venc);
-              const soon = !venc && isSoon(s.venc);
-              const est = s.estado === "rechazado" || venc ? "rechazado" : s.estado;
-              return (
-                <tr key={s.id} className={venc ? "row-danger" : soon ? "row-warning" : ""}>
-                  <td className="td-mono td-bold">{s.codigo}</td>
-                  <td className="td-bold">{s.nombre}</td>
-                  <td className="td-small">{s.proveedor}</td>
-                  <td className="td-small">{s.ingrediente}</td>
-                  <td className="td-center"><span className={s.apta ? "text-success" : "text-danger"}>{s.apta ? "✓" : "✗"}</span></td>
-                  {[s.ft, s.msds].map((v, i) => (
-                    <td key={i} className="td-center"><span className={v ? "text-success" : "text-danger"}>{v ? "✓" : "✗"}</span></td>
-                  ))}
-                  <td className="td-mono td-small">{s.lote}</td>
-                  <td>
-                    <span className={`text-sm-bold ${venc ? "text-danger" : soon ? "text-warning" : ""}`}>
-                      {fmtDate(s.venc)}{venc ? " !" : soon ? " ⚠" : ""}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`status-badge status-${est === "aprobado" ? "approved" : est === "condicionado" ? "pending" : "rejected"}`}>
-                      <span className="status-dot" />
-                      {est.charAt(0).toUpperCase() + est.slice(1)}
-                    </span>
-                  </td>
-                  <td>
-                    {user.role === "admin" && (
-                      <button className="btn-icon" title="Editar" onClick={() => handleEdit(s)}>
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M8.5 2.5l3 3L4 13H1v-3L8.5 2.5z"/></svg>
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div className="table-responsive">
+          <table className="data-table data-table-compact">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Presentación</th>
+                <th>Proveedor</th>
+                <th>Ingrediente Activo</th>
+                <th className="td-center">Apta</th>
+                <th className="td-center">FT</th>
+                <th className="td-center">MSDS</th>
+                <th>Lote</th>
+                <th>Vencimiento</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={12} className="td-empty"><p>No se encontraron insumos</p></td></tr>
+              ) : filtered.map((s) => {
+                const venc = isExpired(s.venc);
+                const soon = !venc && isSoon(s.venc);
+                const est = (s.estadoTecnico || s.estado);
+                const estDisplay = est === "rechazado" || venc ? "rechazado" : est;
+                return (
+                  <tr key={s.id} className={venc ? "row-danger" : soon ? "row-warning" : ""}>
+                    <td className="td-mono td-bold">{s.codigo}</td>
+                    <td className="td-bold">{s.nombre}</td>
+                    <td className="td-small">{s.descripcion || "—"}</td>
+                    <td className="td-small">{s.proveedor}</td>
+                    <td className="td-small">{s.ingrediente || "—"}</td>
+                    <td className="td-center"><span className={(s.aptoAlimentaria || s.apta) ? "text-success" : "text-danger"}>{(s.aptoAlimentaria || s.apta) ? "✓" : "✗"}</span></td>
+                    <td className="td-center"><span className={s.ft ? "text-success" : "text-danger"}>{s.ft ? "✓" : "✗"}</span></td>
+                    <td className="td-center"><span className={s.msds ? "text-success" : "text-danger"}>{s.msds ? "✓" : "✗"}</span></td>
+                    <td className="td-mono td-small">{s.lote || "—"}</td>
+                    <td>
+                      <span className={`text-sm-bold ${venc ? "text-danger" : soon ? "text-warning" : ""}`}>
+                        {fmtDate(s.venc)}{venc ? " !" : soon ? " ⚠" : ""}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`status-badge status-${estDisplay === "aprobado" ? "approved" : estDisplay === "condicionado" || estDisplay === "no_contacto" ? "pending" : "rejected"}`}>
+                        <span className="status-dot" />
+                        {estDisplay === "aprobado" ? "Aprobado" : estDisplay === "condicionado" ? "Condicionado" : estDisplay === "no_contacto" ? "No contacto" : "Rechazado"}
+                      </span>
+                    </td>
+                    <td>
+                      {user.role === "admin" && (
+                        <button className="btn-icon" title="Editar" onClick={() => handleEdit(s)}>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M8.5 2.5l3 3L4 13H1v-3L8.5 2.5z"/></svg>
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div className="info-grid-2">
-        <div className="info-banner info-primary">
-          <strong>ISO/TS 22002-1 §11.2:</strong> Los agentes de limpieza deben ser de grado alimenticio para superficies de contacto, almacenados separados y usados según instrucciones del fabricante.
-        </div>
-        <div className="info-banner info-warning">
-          <strong>Brecha detectada:</strong> Detergente Ace Patito y OMO están marcados como NO aptos para contacto con alimento. Verificar que no se usen en superficies de proceso.
+      {/* Official notes */}
+      <div className="card">
+        <h3 className="card-title">Relación Documental y Criterio de Uso</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="info-banner info-primary" style={{ margin: 0 }}>
+            <strong>RC.LD.03</strong> es la lista maestra de insumos aprobados para limpieza y desinfección. <strong>RC.EP.09</strong> se mantiene como registro de recepción y debe respaldar proveedor, documentación recibida, lote, vencimiento, condición del envase y decisión de recepción.
+          </div>
+          <div className="info-banner info-warning" style={{ margin: 0 }}>
+            Ningún insumo debe liberarse para uso si no cuenta con identificación, ficha técnica/MSDS cuando aplique, lote, vencimiento vigente y recepción aprobada o condicionada documentada en RC.EP.09.
+          </div>
         </div>
       </div>
     </div>
