@@ -1,7 +1,10 @@
 // ─── DATE HELPERS ──────────────────────────────────────────────────────────────
 export const fmtDate = (d) => {
   if (!d) return "—";
-  const [y, m, day] = d.split("-");
+  // Toma solo la parte de fecha si viene con hora (ISO completo)
+  const datePart = String(d).split("T")[0];
+  const [y, m, day] = datePart.split("-");
+  if (!y || !m || !day) return d;
   return `${day}/${m}/${y}`;
 };
 
@@ -15,9 +18,13 @@ export const isSoon = (d) => {
   return diff >= 0 && diff <= 45;
 };
 
+// Devuelve YYYY-MM-DD en hora local (evita desfase UTC)
 export const todayISO = () => {
   const d = getToday();
-  return d.toISOString().split("T")[0];
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 };
 
 export const fmtDateLong = () => {
@@ -55,10 +62,10 @@ export const newSupplyCode = (supplies) => {
 };
 
 export const newPersonnelId = (personnel) =>
-  Math.max(...personnel.map((p) => p.id), 0) + 1;
+  personnel.reduce((m, p) => Math.max(m, p.id || 0), 0) + 1;
 
 export const newSupplyId = (supplies) =>
-  Math.max(...supplies.map((s) => s.id), 0) + 1;
+  supplies.reduce((m, s) => Math.max(m, s.id || 0), 0) + 1;
 
 // ─── MONTH HELPERS ─────────────────────────────────────────────────────────────
 export const getCurrentMonth = () => {

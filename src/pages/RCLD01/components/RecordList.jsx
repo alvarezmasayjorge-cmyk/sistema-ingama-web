@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { AREAS } from "../../../data/initial";
+import { AREAS, ITEMS_AREA } from "../../../data/initial";
 import { fmtDate } from "../../../helpers";
 import StatusBadge from "../../../components/StatusBadge";
 import { exportRC_LD01 } from "../../../utils/exportXlsx";
@@ -117,13 +117,14 @@ export default function RecordList({ records, user, onNew, onDetail }) {
                 <th>Resp. Control</th>
                 <th className="td-center">Estado</th>
                 <th className="td-center">Resultado</th>
+                <th className="td-center">Excel Oficial</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="td-empty">
+                  <td colSpan={9} className="td-empty">
                     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3">
                       <circle cx="20" cy="20" r="18" strokeDasharray="4 2" />
                       <path d="M14 26c0-4 3-6 6-6s6 2 6 6" strokeLinecap="round" />
@@ -150,6 +151,22 @@ export default function RecordList({ records, user, onNew, onDetail }) {
                       ) : (
                         <span className="text-muted">—</span>
                       )}
+                    </td>
+                    <td className="td-center">
+                      <button
+                        className="btn btn-primary btn-sm"
+                        title="Descargar Excel Oficial RC.LD.01 ya rellenado con los datos del registro. Ábralo en Excel/LibreOffice e imprima como PDF."
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const items = ITEMS_AREA[r.area] || [];
+                          exportRC_LD01(r, items).catch(err => alert('Error al generar Excel oficial: ' + err.message));
+                        }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                          <path d="M3 1h7l3 3v11H3V1z M10 1v3h3"/>
+                        </svg>
+                        Descargar
+                      </button>
                     </td>
                     <td className="td-center">
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.3">

@@ -237,9 +237,13 @@ export default function RCLD03({ supplies, setSupplies, user, toast }) {
           <p className="page-subtitle">Lista maestra técnica · Rev. 03 · Vigente 09/05/2026 · {supplies.length} insumo(s)</p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button className="btn btn-outline" onClick={() => { exportRC_LD03(supplies, user).catch(e => alert('Error: ' + e.message)); }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 5V3h8v2M4 11H2V6h12v5h-2M4 9h8v4H4z"/></svg>
-            Imprimir
+          <button
+            className="btn btn-primary"
+            title="Descargar Excel Oficial RC.LD.03 ya rellenado con los datos. Ábralo en Excel/LibreOffice y use Archivo → Imprimir → Guardar como PDF para obtener el PDF impreso con el formato exacto."
+            onClick={() => { exportRC_LD03(supplies, user).catch(e => alert('Error al generar Excel oficial: ' + e.message)); }}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 1h7l3 3v11H3V1z M10 1v3h3"/></svg>
+            Descargar Excel Oficial RC.LD.03
           </button>
           {user.role === "admin" && (
             <button className="btn btn-primary" onClick={() => setShowForm(true)}>

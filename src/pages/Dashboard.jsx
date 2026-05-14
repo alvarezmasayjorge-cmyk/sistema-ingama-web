@@ -218,9 +218,9 @@ export default function Dashboard({ records, personnel, supplies, rcma9, setView
           <h3 className="card-title">Insumos (RC.LD.03)</h3>
           <div className="summary-list">
             {[
-              { label: "Aprobado", count: supplies.filter((s) => s.estado === "aprobado").length, cls: "status-approved" },
-              { label: "Condicionado", count: supplies.filter((s) => s.estado === "condicionado").length, cls: "status-pending" },
-              { label: "Rechazado/Vencido", count: supplies.filter((s) => s.estado === "rechazado" || isExpired(s.venc)).length, cls: "status-rejected" },
+              { label: "Aprobado", count: supplies.filter((s) => (s.estadoTecnico || s.estado) === "aprobado").length, cls: "status-approved" },
+              { label: "Condicionado", count: supplies.filter((s) => (s.estadoTecnico || s.estado) === "condicionado").length, cls: "status-pending" },
+              { label: "Rechazado/Vencido", count: supplies.filter((s) => (s.estadoTecnico || s.estado) === "rechazado" || isExpired(s.venc)).length, cls: "status-rejected" },
             ].map((s, i) => (
               <div key={i} className={`summary-item ${s.cls}`}>
                 <span>{s.label}</span>

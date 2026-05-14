@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NAV_ITEMS } from "../data/initial";
 import { fmtDateLong } from "../helpers";
 

@@ -19,11 +19,18 @@ export default function RecordDetail({ record, user, onUpdate, onBack, toast }) 
   const canSeg = user.role === "seguimiento" || user.role === "admin";
   const pendingSeg = record.estado === "firmado_control";
 
-  // Estado local para la acción correctiva del seguimiento
+  // Estado local para la acción correctiva del seguimiento.
+  // IMPORTANTE: El Resp. de Seguimiento NO puede modificar los datos base
+  // (área, fecha, ítems, frecuencia, resultado original del control).
+  // Solo puede actuar sobre: resultado de verificación, acción correctiva y firma.
   const [segForm, setSegForm] = useState({
     accionCorrectiva: record.accionCorrectivaSeg || "",
     resultadoVerif: record.resultadoVerif || record.resultado || "",
   });
+
+  // Detecta si el Seguimiento cambió el resultado original del Control
+  const resultadoOriginal = record.resultado || "";
+  const resultadoCambiado = segForm.resultadoVerif && segForm.resultadoVerif !== resultadoOriginal;
 
   // Compute compliance stats (√ = cumple)
   const stats = useMemo(() => {
@@ -58,6 +65,17 @@ export default function RecordDetail({ record, user, onUpdate, onBack, toast }) 
     toast?.success("Registro firmado como Responsable de Seguimiento.");
   };
 
+  const buildCambioResultado = (tipoAccion) => {
+    if (!resultadoCambiado) return null;
+    return {
+      quién: user.name,
+      rol: "seguimiento",
+      fechaHora: new Date().toISOString(),
+      tipo: "cambio_resultado",
+      detalle: `Resultado modificado por verificación: "${resultadoOriginal || "—"}" → "${segForm.resultadoVerif}". Acción: ${tipoAccion}. Justificación/Acción correctiva: ${segForm.accionCorrectiva || "—"}`,
+    };
+  };
+
   const handleApprove = () => {
     const sig = {
       firmado: true,
@@ -66,20 +84,23 @@ export default function RecordDetail({ record, user, onUpdate, onBack, toast }) 
       fechaHora: new Date().toISOString(),
       tipo: "digital",
     };
-    const cambio = {
+    const cambios = [];
+    const cambioRes = buildCambioResultado("aprobación");
+    if (cambioRes) cambios.push(cambioRes);
+    cambios.push({
       quién: user.name,
       rol: "seguimiento",
       fechaHora: new Date().toISOString(),
       tipo: "aprobacion",
-      detalle: `Verificado y aprobado. Resultado: ${segForm.resultadoVerif}. Acción correctiva: ${segForm.accionCorrectiva || "Ninguna"}`,
-    };
+      detalle: `Verificado y aprobado. Resultado final: ${segForm.resultadoVerif}. Acción correctiva: ${segForm.accionCorrectiva || "Ninguna"}`,
+    });
     onUpdate({
       ...record,
       estado: "aprobado",
       firmaSeg: sig,
       accionCorrectivaSeg: segForm.accionCorrectiva,
       resultadoVerif: segForm.resultadoVerif,
-      historialCambios: [...(record.historialCambios || []), cambio],
+      historialCambios: [...(record.historialCambios || []), ...cambios],
     });
     toast?.success("Registro aprobado y verificado.");
   };
@@ -92,30 +113,33 @@ export default function RecordDetail({ record, user, onUpdate, onBack, toast }) 
       fechaHora: new Date().toISOString(),
       tipo: "digital",
     };
-    const cambio = {
+    const cambios = [];
+    const cambioRes = buildCambioResultado("rechazo");
+    if (cambioRes) cambios.push(cambioRes);
+    cambios.push({
       quién: user.name,
       rol: "seguimiento",
       fechaHora: new Date().toISOString(),
       tipo: "rechazo",
       detalle: `Rechazado. Resultado verificación: ${segForm.resultadoVerif}. Acción correctiva: ${segForm.accionCorrectiva || "Ninguna"}`,
-    };
+    });
     onUpdate({
       ...record,
       estado: "rechazado",
       firmaSeg: sig,
       accionCorrectivaSeg: segForm.accionCorrectiva,
       resultadoVerif: segForm.resultadoVerif,
-      historialCambios: [...(record.historialCambios || []), cambio],
+      historialCambios: [...(record.historialCambios || []), ...cambios],
     });
     toast?.warning("Registro rechazado. Se notificará al responsable de control.");
   };
 
-  const handleDownload = async () => {
+  const handleDownloadOfficial = async () => {
     try {
       await exportRC_LD01(record, currentItems);
-      toast?.success("Excel descargado correctamente.");
+      toast?.success("Excel oficial descargado. Ábralo en Excel/LibreOffice y use Archivo → Imprimir → Guardar como PDF.");
     } catch (e) {
-      toast?.error("Error al generar el Excel: " + e.message);
+      toast?.error("Error al generar Excel oficial: " + e.message);
     }
   };
 
@@ -140,11 +164,16 @@ export default function RecordDetail({ record, user, onUpdate, onBack, toast }) 
           </p>
         </div>
         <StatusBadge status={record.estado} />
-        <button className="btn btn-outline" onClick={handleDownload} style={{ marginLeft: 8 }}>
+        <button
+          className="btn btn-primary"
+          onClick={handleDownloadOfficial}
+          style={{ marginLeft: 8 }}
+          title="Descargar Excel (formato OFICIAL idéntico al RC.LD.01). Abra el archivo en Excel/LibreOffice y use 'Imprimir → Guardar como PDF' para obtener el PDF oficial."
+        >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M4 5V3h8v2M4 11H2V6h12v5h-2M4 9h8v4H4z"/>
+            <path d="M3 1h7l3 3v11H3V1z M10 1v3h3"/>
           </svg>
-          Imprimir
+          Descargar Excel Oficial RC.LD.01
         </button>
       </div>
 
@@ -257,26 +286,24 @@ export default function RecordDetail({ record, user, onUpdate, onBack, toast }) 
         </div>
       </div>
 
-      {/* ─── FIRMA DEL RESPONSABLE DE CONTROL (solo lectura) ─── */}
+      {/* ─── REGISTRO DE ENVÍO DEL RESPONSABLE DE CONTROL ─── */}
+      {/* La firma digital del Responsable de Control fue eliminada por requerimiento. */}
+      {/* Solo se conserva la trazabilidad del envío (nombre + fecha/hora). */}
       <div className="card">
-        <h3 className="card-title">Firma del Responsable de Control</h3>
-        {record.firmaCtrl?.firmado ? (
+        <h3 className="card-title">Registro del Responsable de Control</h3>
+        {record.enviadoCtrl?.fechaHora || record.firmaCtrl?.firmado ? (
           <div style={{ padding: "12px 0", display: "flex", gap: 24, flexWrap: "wrap" }}>
             <div className="detail-field">
-              <span className="detail-label">Firmado por</span>
-              <span className="detail-value">{record.firmaCtrl.nombre}</span>
+              <span className="detail-label">Completado por</span>
+              <span className="detail-value">{record.enviadoCtrl?.nombre || record.firmaCtrl?.nombre || record.respControl}</span>
             </div>
             <div className="detail-field">
-              <span className="detail-label">Fecha / Hora</span>
-              <span className="detail-value">{fmtHora(record.firmaCtrl.fechaHora)}</span>
-            </div>
-            <div className="detail-field">
-              <span className="detail-label">Tipo</span>
-              <span className="detail-value">{record.firmaCtrl.tipo === "canvas" ? "Manuscrita" : "Digital"}</span>
+              <span className="detail-label">Fecha / Hora envío</span>
+              <span className="detail-value">{fmtHora(record.enviadoCtrl?.fechaHora || record.firmaCtrl?.fechaHora)}</span>
             </div>
           </div>
         ) : (
-          <p className="text-muted" style={{ fontSize: 13 }}>No firmado aún por el Responsable de Control.</p>
+          <p className="text-muted" style={{ fontSize: 13 }}>Aún no enviado a verificación por el Responsable de Control.</p>
         )}
       </div>
 
@@ -284,9 +311,20 @@ export default function RecordDetail({ record, user, onUpdate, onBack, toast }) 
       {canSeg && pendingSeg && (
         <div className="card card-warning">
           <h3 className="card-title">Verificación — Responsable de Seguimiento</h3>
-          <p style={{ marginBottom: 16, fontSize: 13, color: "var(--text-secondary)" }}>
-            Este registro fue firmado por el Responsable de Control. Revise los datos (solo lectura) y complete la verificación.
-          </p>
+          <div className="info-banner info-warning" style={{ marginBottom: 16, fontSize: 12 }}>
+            <strong>Restricción:</strong> No puede modificar área, fecha, ítems, frecuencia ni datos llenados por el Responsable de Control. Solo puede registrar el resultado de verificación, la acción correctiva, firmar y, si corresponde, cambiar el resultado de la limpieza con trazabilidad.
+          </div>
+
+          {/* Aviso si está cambiando el resultado original */}
+          {resultadoCambiado && (
+            <div className="info-banner info-primary" style={{ marginBottom: 12, fontSize: 12 }}>
+              <strong>Atención:</strong> Está cambiando el resultado original "
+              {resultadoOriginal === "conforme" ? "Conforme" : resultadoOriginal === "no_conforme" ? "No conforme" : "—"}
+              " → "
+              {segForm.resultadoVerif === "conforme" ? "Conforme" : "No conforme"}".
+              El cambio quedará registrado con trazabilidad (quién, fecha, hora y justificación) al confirmar.
+            </div>
+          )}
 
           {/* Resultado de verificación */}
           <div className="form-group">

@@ -71,9 +71,13 @@ function RecordList({ records, user, onNew, onDetail }) {
         </div>
         {canCreate && (
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button className="btn btn-outline" onClick={() => { exportRC_MA09(records, user).catch(e => alert('Error al generar Excel: ' + e.message)); }}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 5V3h8v2M4 11H2V6h12v5h-2M4 9h8v4H4z"/></svg>
-              Imprimir
+            <button
+              className="btn btn-primary"
+              title="Descargar Excel Oficial RC.MA.09 ya rellenado con los datos. Ábralo en Excel/LibreOffice y use Archivo → Imprimir → Guardar como PDF para obtener el PDF impreso con el formato exacto."
+              onClick={() => { exportRC_MA09(records, user).catch(e => alert('Error al generar Excel oficial: ' + e.message)); }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 1h7l3 3v11H3V1z M10 1v3h3"/></svg>
+              Descargar Excel Oficial RC.MA.09
             </button>
             <button className="btn btn-primary" onClick={onNew}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M8 3v10M3 8h10" /></svg>
@@ -214,14 +218,12 @@ function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
       toast?.warning("Complete la identificación y el resultado del muestreo.");
       return;
     }
-    const signData = {
-      firmado: true,
-      nombre: user.name,
-      rol: user.role,
-      fechaHora: new Date().toISOString(),
-      tipo: "digital",
-    };
-    onSave({ ...form, firmaCtrl: signData });
+    // La firma del Responsable de Control fue eliminada por requerimiento.
+    // Se conserva sólo la trazabilidad del envío.
+    onSave({
+      ...form,
+      enviadoCtrl: { nombre: user.name, fechaHora: new Date().toISOString() },
+    });
     toast?.success("Registro de hisopado guardado correctamente.");
   };
 
@@ -311,33 +313,21 @@ function RecordForm({ record, user, onSave, onCancel, allRecords, toast }) {
           </div>
         </div>
 
-        {/* Firmas */}
+        {/* Firma — solo Responsable de Seguimiento (por requerimiento) */}
         <div className="card">
-          <h3 className="card-title">Firmas</h3>
-          <div className="form-grid-2">
-            <div>
-              <p className="form-label" style={{ marginBottom: 8 }}>Responsable del Control</p>
-              <SignatureBox
-                label="Firma Responsable Control"
-                signature={form.firmaCtrl}
-                signerName={form.respControl}
-                signerRole={user.role}
-                canSign={!form.firmaCtrl?.firmado}
-                onSign={(sig) => upd("firmaCtrl", sig)}
-              />
-            </div>
-            <div>
-              <p className="form-label" style={{ marginBottom: 8 }}>Responsable de Seguimiento</p>
-              <SignatureBox
-                label="Firma Responsable Seguimiento"
-                signature={form.firmaSeg}
-                signerName={form.respSeguimiento || "Pendiente"}
-                signerRole="seguimiento"
-                canSign={false}
-                onSign={(sig) => upd("firmaSeg", sig)}
-              />
-            </div>
+          <h3 className="card-title">Firma del Responsable de Seguimiento</h3>
+          <div className="info-banner info-primary" style={{ marginBottom: 12, fontSize: 12 }}>
+            Por requerimiento, sólo el Responsable de Seguimiento firma digitalmente.
+            El Responsable de Control queda identificado por nombre y fecha/hora de registro.
           </div>
+          <SignatureBox
+            label="Firma Responsable Seguimiento (rápida o manuscrita)"
+            signature={form.firmaSeg}
+            signerName={form.respSeguimiento || user.name}
+            signerRole="seguimiento"
+            canSign={user.role === "seguimiento" || user.role === "admin"}
+            onSign={(sig) => upd("firmaSeg", sig)}
+          />
         </div>
 
         <div className="form-actions">

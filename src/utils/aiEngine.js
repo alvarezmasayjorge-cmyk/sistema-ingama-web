@@ -22,8 +22,13 @@ export function calculateAreaRisks(records, rcma9) {
         ? Math.floor((today() - new Date(lastFecha)) / 86400000)
         : 999;
 
+      // RC.MA.09 clasifica por valor RLU, no por estado:
+      //   ≤100 = pasa, 101-500 = precaución, >500 = no pasa
       const atpRecords = (rcma9 || []).filter((r) => r.area === area);
-      const atpNoConf = atpRecords.filter((r) => r.estado === "no_conforme").length;
+      const atpNoConf = atpRecords.filter((r) => {
+        const n = parseFloat(r.resultado);
+        return !isNaN(n) && n > 500;
+      }).length;
       const atpRisk = atpRecords.length > 0 ? atpNoConf / atpRecords.length : 0;
 
       const noConformeRatio = noConformes / total;
@@ -95,7 +100,10 @@ export function generateRecommendations(records, personnel, supplies, rcma9) {
     });
   }
 
-  const atpNoConf = (rcma9 || []).filter((r) => r.estado === "no_conforme");
+  const atpNoConf = (rcma9 || []).filter((r) => {
+    const n = parseFloat(r.resultado);
+    return !isNaN(n) && n > 500;
+  });
   if (atpNoConf.length > 0) {
     const areasAfectadas = [...new Set(atpNoConf.map((r) => r.area))].length;
     recs.push({
@@ -120,7 +128,7 @@ export function generateRecommendations(records, personnel, supplies, rcma9) {
     });
   }
 
-  const condicionados = supplies.filter((s) => s.estado === "condicionado");
+  const condicionados = supplies.filter((s) => (s.estadoTecnico || s.estado) === "condicionado");
   if (condicionados.length > 0) {
     recs.push({
       priority: "media",

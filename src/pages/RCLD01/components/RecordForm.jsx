@@ -36,7 +36,8 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
       resultado: record?.resultado || "",
       correccion: record?.correccion || "",
       liberacion: record?.liberacion || "",
-      firmaCtrl: record?.firmaCtrl || null,
+      // Nota: La firma del Responsable de Control fue eliminada por requerimiento.
+      // Solo el Responsable de Seguimiento firma el registro.
       firmaSeg: record?.firmaSeg || null,
       obs: record?.obs || "",
       estado: record?.estado || "borrador",
@@ -78,18 +79,25 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
 
   const saveAndSign = () => {
     if (!validate(true)) {
-      toast?.warning("Complete y corrija los campos marcados antes de firmar.");
+      toast?.warning("Complete y corrija los campos marcados antes de enviar a verificación.");
       return;
     }
-    const signData = {
-      firmado: true,
-      nombre: user.name,
-      rol: user.role,
+    // El Responsable de Control NO firma digitalmente. Solo se registra
+    // su nombre y la fecha/hora en que envió el registro a verificación.
+    const cambio = {
+      quién: user.name,
+      rol: "control",
       fechaHora: new Date().toISOString(),
-      tipo: "digital",
+      tipo: "envio",
+      detalle: `Registro completado por ${user.name} y enviado a verificación del Resp. de Seguimiento.`,
     };
-    onSave({ ...form, estado: "firmado_control", firmaCtrl: signData });
-    toast?.success("Registro firmado y enviado a verificación.");
+    onSave({
+      ...form,
+      estado: "firmado_control",
+      enviadoCtrl: { nombre: user.name, fechaHora: new Date().toISOString() },
+      historialCambios: [...(form.historialCambios || []), cambio],
+    });
+    toast?.success("Registro enviado a verificación del Responsable de Seguimiento.");
   };
 
   const saveDraft = () => {
@@ -434,7 +442,7 @@ export default function RecordForm({ record, user, onSave, onCancel, allRecords,
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M3 7l3 3 5-5" />
               </svg>
-              Guardar y Firmar
+              Guardar y Enviar a Verificación
             </button>
           </div>
         )}
