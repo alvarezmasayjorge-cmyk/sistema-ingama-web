@@ -6,7 +6,7 @@
  * diseño original del documento.
  */
 
-import ExcelJS from "exceljs";
+import ExcelJS from "exceljs/dist/exceljs.min.js";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
